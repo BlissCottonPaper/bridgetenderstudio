@@ -51,7 +51,7 @@
     │  HERO IMAGE                                              │
     │  File must be named: hero.png                           │
     │  Upload alongside index.html in GitHub repo root.       │
-    │  Rename from "BridgeTender Side View.png" → hero.png   │
+    │  Rename from "BridgeTender Side View.jpg" → hero.png   │
     └──────────────────────────────────────────────────────────┘
     */
     .hero-bg {
@@ -667,10 +667,9 @@
 
   <script>
     // Hero image fallback to warm radial glow
+    // Force hero image with cache bust
     const heroBg = document.getElementById('heroBg');
-    const probe = new Image();
-    probe.onerror = () => heroBg.classList.add('no-image');
-    probe.src = 'hero.jpg';
+    heroBg.style.backgroundImage = "url('hero.png?v=" + Date.now() + "')";
 
     // Scroll-triggered card fade-in
     const observer = new IntersectionObserver(
