@@ -3,12 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Harmony — The Way Within</title>
+<title>Harmony — A Game of Balance</title>
+<!-- build:v14 — Fog-as-discard (turn ends at 7); Sun = solo accelerant, reveal 3 keep 1, Sun+rejects melt to deck (never the pile), then normal discard; Wind also = the discard; tagline -> A Game of Balance -->
 <style>
   :root{
     --parchment:#e9e0cc; --ink:#3a3428; --north:#3b6ea5; --east:#c1662f;
-    --south:#d4a017; --west:#6b4e8c; --neutral:#7d7566; --gold:#b8912f;
-    --felt:#2f3a30;
+    --south:#d4a017; --west:#6b4e8c; --neutral:#7d7566; --gold:#b8912f; --felt:#2f3a30;
+    --cardW:104px; --cardH:150px;   /* tune these two to resize every card at once */
   }
   *{box-sizing:border-box;}
   body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--felt);
@@ -20,74 +21,75 @@
   header .score{margin-left:auto;font-size:15px;color:var(--parchment);}
   header .score b{color:var(--gold);}
   #log{background:#1c231c;border-top:1px solid #3d4a3d;font-size:12.5px;
-    max-height:78px;overflow-y:auto;padding:6px 18px;color:#c9c2ae;}
+    max-height:74px;overflow-y:auto;padding:6px 18px;color:#c9c2ae;}
   #log div{padding:1px 0;}
-  .board{padding:12px 18px 120px;}
-  .zone{margin-bottom:14px;}
-  .zone h2{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;
-    color:#a89f88;margin:0 0 6px;border-bottom:1px solid #46523f;padding-bottom:3px;}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+  .board{padding:12px 18px 130px;max-width:1240px;margin:0 auto;}
+  .zone{margin-bottom:16px;}
+  .zone h2{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;text-align:center;
+    color:#a89f88;margin:0 0 8px;border-bottom:1px solid #46523f;padding-bottom:4px;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-start;justify-content:center;}
   .set{border:1px dashed #5a6650;border-radius:8px;padding:6px;background:#28312a;}
   .set.locked{border:2px solid var(--gold);background:#33301f;}
+  .set.reserve{border:1px dashed #8a7a4a;background:#302c1f;}
   .set .setlabel{font-size:11px;color:#9aa88e;margin-bottom:4px;}
   .set.locked .setlabel{color:var(--gold);}
   .set .cards{display:flex;gap:4px;flex-wrap:wrap;}
-  .card{width:78px;height:112px;border-radius:7px;background:#d8cdb4;color:#2a2418;
-    position:relative;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,.4);
-    cursor:default;flex:0 0 auto;border:1px solid #00000030;user-select:none;
-    transition:transform .1s;}
-  .card.mini{width:54px;height:78px;}
+  /* A locked (capped) set is "closed" — its cards stack into a compact overlapping fan,
+     colored tops peeking, seasons sealed on top. Much smaller footprint. */
+  .set.locked .cards{gap:0;}
+  .set.locked .cards .card{margin-left:-32px;box-shadow:-3px 0 6px #0007;}
+  .set.locked .cards .card:first-child{margin-left:0;}
+  .set.locked:hover .cards .card{margin-left:2px;} /* hover a closed set to fan it back open */
+  .set.locked:hover .cards .card:first-child{margin-left:0;}
+  /* Every dimension inside a card is a fraction of --cardH, so overriding
+     --cardW/--cardH (e.g. on .mini) rescales the whole card automatically. */
+  .card{width:var(--cardW);height:var(--cardH);border-radius:8px;background:#d8cdb4;color:#2a2418;
+    position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,.4);
+    flex:0 0 auto;border:1px solid #00000030;user-select:none;transition:transform .1s,box-shadow .1s;}
+  .card.mini{--cardW:62px;--cardH:90px;}
+  #pHand .card{--cardW:122px;--cardH:176px;} /* your hand cards sit a little larger */
   .card.sel{outline:3px solid var(--gold);transform:translateY(-8px);}
+  .card.hint{box-shadow:0 0 0 2px var(--gold),0 0 14px 3px #d4a01799;}
+  .card.stealable{box-shadow:0 0 0 2px #4f8c4a,0 0 14px 3px #4f8c4a99;}
   .card.playable{cursor:pointer;}
   .card.playable:hover{transform:translateY(-6px);}
-  .card .top{height:22px;display:flex;align-items:center;justify-content:center;
-    font-size:10px;font-weight:bold;color:#fff;text-shadow:0 1px 1px #0006;letter-spacing:.5px;}
-  .card.mini .top{height:16px;font-size:8px;}
-  .card .body{position:absolute;top:22px;bottom:16px;left:0;right:0;
-    display:flex;align-items:center;justify-content:center;flex-direction:column;
-    text-align:center;padding:2px;}
-  .card.mini .body{top:16px;bottom:11px;}
-  .card .icon{font-size:26px;line-height:1;}
-  .card.mini .icon{font-size:16px;}
-  .card .name{font-size:10px;margin-top:3px;font-weight:bold;}
-  .card.mini .name{font-size:7px;margin-top:1px;}
-  .card .foot{position:absolute;bottom:0;left:0;right:0;height:16px;
-    font-size:8px;text-align:center;color:#fff;background:#0003;}
-  .card.mini .foot{height:11px;font-size:6px;line-height:11px;}
+  .card .top{height:calc(var(--cardH)*0.19);display:flex;align-items:center;justify-content:center;
+    font-size:calc(var(--cardH)*0.092);font-weight:bold;color:#fff;text-shadow:0 1px 1px #0006;letter-spacing:.5px;}
+  .card .body{position:absolute;top:calc(var(--cardH)*0.19);bottom:calc(var(--cardH)*0.12);left:0;right:0;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:2px;}
+  .card .icon{font-size:calc(var(--cardH)*0.235);line-height:1;}
+  .card .name{font-size:calc(var(--cardH)*0.092);margin-top:3px;font-weight:bold;}
+  .card .foot{position:absolute;bottom:0;left:0;right:0;height:calc(var(--cardH)*0.12);line-height:calc(var(--cardH)*0.12);
+    font-size:calc(var(--cardH)*0.068);text-align:center;color:#fff;background:#0003;}
   .card.back{background:var(--parchment);}
-  .card.back .enso{position:absolute;inset:0;display:flex;align-items:center;
-    justify-content:center;font-size:34px;color:#5a4e33;}
+  .card.back .enso{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:calc(var(--cardH)*0.24);color:#5a4e33;}
   .card.fogged::after{content:'FOG';position:absolute;inset:0;background:#c9d3dd99;
-    display:flex;align-items:center;justify-content:center;font-weight:bold;
-    color:#33475a;font-size:14px;letter-spacing:2px;}
-  .pile{width:78px;height:112px;border-radius:7px;border:2px dashed #5a6650;
+    display:flex;align-items:center;justify-content:center;font-weight:bold;color:#33475a;font-size:calc(var(--cardH)*0.09);letter-spacing:2px;}
+  .pile{width:var(--cardW);height:var(--cardH);border-radius:8px;border:2px dashed #5a6650;
     display:flex;align-items:center;justify-content:center;text-align:center;
-    font-size:11px;color:#9aa88e;cursor:pointer;background:#28312a;}
+    font-size:12px;color:#9aa88e;cursor:pointer;background:#28312a;}
   .pile:hover{border-color:var(--gold);color:var(--gold);}
   #controls{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(#20281f,#2f3a30);
-    border-top:2px solid var(--gold);padding:8px 18px;display:flex;gap:8px;
-    align-items:center;flex-wrap:wrap;}
+    border-top:2px solid var(--gold);padding:8px 18px;display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;}
   button{font-family:inherit;font-size:13px;padding:7px 12px;border-radius:6px;
     border:1px solid var(--gold);background:#3a3120;color:var(--parchment);cursor:pointer;}
   button:hover:not(:disabled){background:#4a3f26;}
   button:disabled{opacity:.4;cursor:not-allowed;}
   button.primary{background:var(--gold);color:#241d0c;font-weight:bold;}
   #hint{font-style:italic;color:#cfc7b0;font-size:13px;margin-left:6px;}
-  .piles{display:flex;gap:10px;align-items:flex-start;}
+  .piles{display:flex;gap:14px;align-items:flex-start;justify-content:center;}
   .pilewrap{text-align:center;font-size:11px;color:#9aa88e;}
-  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;
-    justify-content:center;z-index:50;}
+  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:50;}
   #overlay .modal{background:var(--parchment);color:var(--ink);border-radius:12px;
-    padding:24px 28px;max-width:520px;text-align:center;box-shadow:0 8px 30px #000;}
+    padding:24px 28px;max-width:560px;text-align:center;box-shadow:0 8px 30px #000;}
   #overlay .modal h2{margin-top:0;color:#5a4a22;}
   #overlay .modal .picks{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0;}
-  .badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:9px;
-    background:#00000030;margin-left:6px;}
+  .badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:9px;background:#00000030;margin-left:6px;}
 </style>
 </head>
 <body>
 <header>
-  <h1>HARMONY</h1><span class="tag">The Way Within</span>
+  <h1>HARMONY</h1><span class="tag">A Game of Balance</span>
   <span class="score">You <b id="pScore">0</b> / <span id="target">4</span> &nbsp;·&nbsp;
     Opponent <b id="aScore">0</b> / <span id="target2">4</span></span>
 </header>
@@ -98,18 +100,15 @@
     <div class="row" id="aHand"></div>
     <div class="row" id="aSets" style="margin-top:8px;"></div>
   </div>
-
   <div class="zone"><h2>Table</h2>
     <div class="piles">
       <div class="pilewrap"><div class="pile" id="drawPile" onclick="drawFrom('draw')"></div>Draw</div>
       <div class="pilewrap"><div class="pile" id="discardPile" onclick="drawFrom('discard')"></div>Discard</div>
     </div>
   </div>
-
   <div class="zone"><h2>Your Sets</h2>
     <div class="row" id="pSets"></div>
   </div>
-
   <div class="zone"><h2>Your Hand <span id="handCount" class="badge"></span></h2>
     <div class="row" id="pHand"></div>
   </div>
@@ -117,7 +116,7 @@
 
 <div id="controls">
   <button id="btnLay" class="primary" onclick="layDownSet()" disabled>Lay Down Set</button>
-  <button id="btnCap" onclick="capWithSeasons()" disabled>Cap with Seasons</button>
+  <button id="btnSteal" onclick="stealMountain()" disabled>Steal Mountain</button>
   <button id="btnSpecial" onclick="playSpecial()" disabled>Play Special</button>
   <button id="btnDiscard" onclick="discardSelected()" disabled>Discard &amp; End Turn</button>
   <button onclick="clearSel()">Clear Selection</button>
@@ -130,465 +129,539 @@
 <script>
 /* ============================================================
    HARMONY — playable prototype (single player vs. a simple AI)
-   Built from the July 2026 working-draft rules.
-   Card art: drop images named e.g. North_River.jpg into /art/
-   and set ART_BASE below; placeholders show until then.
+   Rules per Marc's July 17 2026 answers. Cards are words for now;
+   drop art named North_River.jpg into /art/ and set USE_ART=true.
    ============================================================ */
+const ART_BASE="art/"; const USE_ART=false;
+/* Card glow (gold = layable set, green = completable Mountain) is a training aid for the
+   solo teaser. In real 1-on-1 human play it must be OFF — no coaching your opponent's eye.
+   Flip to false for the head-to-head build. */
+const SHOW_HINTS=true;
+const TERRAINS=["Forest","Field","River","Road"];
+const DIRECTIONS=["North","East","South","West"];
+const SEASONS=["Spring","Summer","Autumn","Winter"];
+const DIRCOLOR={North:"var(--north)",East:"var(--east)",South:"var(--south)",West:"var(--west)"};
+const TERRAINICON={Forest:"🌳",Field:"🌾",River:"🌊",Road:"🛤️"};
+const SEASONICON={Spring:"🌸",Summer:"🍃",Autumn:"🍁",Winter:"❄️"};
+const SEASONCOLOR={Spring:"#c46b8b",Summer:"#4f8c4a",Autumn:"#c1662f",Winter:"#5a7fa5"};
+const SPECIAL={Mountain:"⛰️",Fog:"🌫️",Wind:"🍃",Storm:"⚡",Sun:"☀️",Moon:"🌙"};
+const TARGET=4;
+let uid=0;
+function card(p){return Object.assign({id:++uid,fog:false},p);}
+function buildDeck(){const d=[];
+  for(const t of TERRAINS)for(const dir of DIRECTIONS)for(let i=0;i<3;i++)d.push(card({kind:"terrain",terrain:t,direction:dir}));
+  for(const s of SEASONS)for(let i=0;i<10;i++)d.push(card({kind:"season",season:s}));
+  for(let i=0;i<6;i++)d.push(card({kind:"special",special:"Mountain"}));
+  for(let i=0;i<4;i++)d.push(card({kind:"special",special:"Fog"}));
+  for(let i=0;i<4;i++)d.push(card({kind:"special",special:"Wind"}));
+  d.push(card({kind:"special",special:"Storm"})); // one sky, one storm
+  d.push(card({kind:"special",special:"Sun"}));   // it is either day…
+  d.push(card({kind:"special",special:"Moon"}));  // …or night — never twice
+  return d;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-const ART_BASE = "art/";           // where card images will live
-const USE_ART  = false;            // flip true once art is in /art/
-
-const TERRAINS   = ["Forest","Field","River","Road"];
-const DIRECTIONS = ["North","East","South","West"];
-const SEASONS    = ["Spring","Summer","Autumn","Winter"];
-const DIRCOLOR   = {North:"var(--north)",East:"var(--east)",South:"var(--south)",West:"var(--west)"};
-const TERRAINICON= {Forest:"🌳",Field:"🌾",River:"🌊",Road:"🛤️"};
-const SEASONICON = {Spring:"🌸",Summer:"🍃",Autumn:"🍁",Winter:"❄️"};
-const SEASONCOLOR= {Spring:"#c46b8b",Summer:"#4f8c4a",Autumn:"#c1662f",Winter:"#5a7fa5"};
-const SPECIAL    = {Mountain:"⛰️",Fog:"🌫️",Wind:"🍃",Storm:"⚡",Sun:"☀️",Moon:"🌙"};
-// Four celestial wild cards — each stands in for ANY season when capping a set.
-const CELESTIALS = ["Spring Equinox","Summer Solstice","Fall Equinox","Winter Solstice"];
-const SPECIALDESC = {
-  Mountain:"Wild — substitutes for any terrain.",
-  Fog:"Freeze an opponent's Mountain set (blocks capping/stealing).",
-  Wind:"Clear one Fog.",
-  Storm:"Everyone discards their hand and draws 7.",
-  Sun:"Reveal 4; each player keeps one.",
-  Moon:"Discard up to 3 and draw the same number."
-};
-
-const TARGET = 4;                  // 2-player target: 4 locked sets
-
-let uid = 0;
-function card(props){ return Object.assign({id:++uid, seasons:[], fog:false}, props); }
-
-function buildDeck(){
-  const d=[];
-  for(const t of TERRAINS) for(const dir of DIRECTIONS) for(let i=0;i<3;i++)
-    d.push(card({kind:"terrain",terrain:t,direction:dir}));
-  for(const s of SEASONS) for(let i=0;i<10;i++) d.push(card({kind:"season",season:s}));
-  for(let i=0;i<6;i++) d.push(card({kind:"special",special:"Mountain"}));
-  for(let i=0;i<4;i++) d.push(card({kind:"special",special:"Fog"}));
-  for(let i=0;i<4;i++) d.push(card({kind:"special",special:"Wind"}));
-  d.push(card({kind:"special",special:"Storm"}));
-  d.push(card({kind:"special",special:"Sun"}));
-  d.push(card({kind:"special",special:"Moon"}));
-  for(const c of CELESTIALS) d.push(card({kind:"season",season:"*",wild:true,celestial:c}));
-  return d;
-}
-
-// deterministic-ish shuffle (no Math.random restriction here — this file runs standalone)
-function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
-
-let G;   // game state
+let G;
 function newGame(){
-  const deck = shuffle(buildDeck());
-  G = {
-    draw: deck, discard: [],
-    player:{hand:[], sets:[]}, ai:{hand:[], sets:[]},
-    turn:"player", drewThisTurn:false, sel:new Set(), over:false, msg:[]
-  };
-  for(let i=0;i<7;i++){ G.player.hand.push(G.draw.pop()); G.ai.hand.push(G.draw.pop()); }
-  G.discard.push(G.draw.pop());
+  const deck=shuffle(buildDeck());
+  G={draw:deck,discard:[],player:{hand:[],sets:[],reserve:null},ai:{hand:[],sets:[],reserve:null},
+     turn:"player",drewThisTurn:false,sel:new Set(),over:false,msg:[],eventQueue:[],eventSpent:[],eventNext:null};
+  STORM_ACTIVE=false;
+  for(let i=0;i<7;i++){G.player.hand.push(G.draw.pop());G.ai.hand.push(G.draw.pop());}
   logMsg("A new game begins. Draw a card to start your turn.");
-  render();
+  /* A table event dealt into an opening hand still fires immediately, in sky-priority.
+     Pull any out of both hands, top the hands back up, then resolve. */
+  const dealt=[];
+  [G.player,G.ai].forEach(w=>{for(let i=w.hand.length-1;i>=0;i--){if(isImmediate(w.hand[i]))dealt.push(w.hand.splice(i,1)[0]);}});
+  const startDiscard=()=>{
+    let idx=G.draw.length-1;while(idx>=0&&isImmediate(G.draw[idx]))idx--; // top discard is an ordinary card
+    if(idx>=0)G.discard.push(G.draw.splice(idx,1)[0]);
+    render();
+  };
+  if(dealt.length){G.eventQueue.push(...dealt);drawUpTo(G.player);drawUpTo(G.ai);render();flushEvents(startDiscard);}
+  else startDiscard();
 }
-
-function logMsg(m){ G.msg.unshift(m); if(G.msg.length>40)G.msg.pop();
-  const el=document.getElementById("log"); el.innerHTML=G.msg.map(x=>"<div>"+x+"</div>").join(""); }
+function logMsg(m){G.msg.unshift(m);if(G.msg.length>40)G.msg.pop();
+  document.getElementById("log").innerHTML=G.msg.map(x=>"<div>"+x+"</div>").join("");}
+function cardName(c){if(c.kind==="terrain")return c.direction+" "+c.terrain;if(c.kind==="season")return c.season;return c.special;}
 
 /* ---------- SET LOGIC ---------- */
-// Given 4 terrain/mountain cards, is it a valid Harmony set? returns {ok,label}
 function evaluateSet(cards){
-  if(cards.length!==4) return {ok:false};
-  const reals = cards.filter(c=>c.kind==="terrain");
-  const wilds = cards.filter(c=>c.special==="Mountain").length;
-  if(reals.length+wilds!==4) return {ok:false};
-  // direction-based: all same direction, all 4 terrains
-  const dirs=new Set(reals.map(c=>c.direction));
-  const ters=new Set(reals.map(c=>c.terrain));
-  // Try direction-based (same direction, 4 distinct terrains)
-  if(dirs.size<=1){
-    const needed = 4 - reals.length; // wilds fill missing terrains
-    if(ters.size===reals.length && reals.length+needed===4){
-      const dir=[...dirs][0]||"Wild";
-      return {ok:true,label:dir+" — all terrains",type:"direction"};
-    }
-  }
-  // Try terrain-based (same terrain, 4 distinct directions)
-  if(ters.size<=1){
-    if(dirs.size===reals.length){
-      const ter=[...ters][0]||"Wild";
-      return {ok:true,label:ter+" — all directions",type:"terrain"};
-    }
-  }
-  return {ok:false};
+  if(cards.length!==4)return{ok:false};
+  const reals=cards.filter(c=>c.kind==="terrain");
+  const wilds=cards.filter(c=>c.special==="Mountain").length;
+  if(reals.length<1)return{ok:false};            // a set needs at least one real terrain to define it — no all-wild sets
+  if(reals.length+wilds!==4)return{ok:false};
+  const dirs=new Set(reals.map(c=>c.direction)),ters=new Set(reals.map(c=>c.terrain));
+  if(dirs.size<=1 && ters.size===reals.length){const dir=[...dirs][0]||"Wild";return{ok:true,label:dir+" — all terrains",type:"direction"};}
+  if(ters.size<=1 && dirs.size===reals.length){const ter=[...ters][0]||"Wild";return{ok:true,label:ter+" — all directions",type:"terrain"};}
+  return{ok:false};
 }
-
-// A valid seasonal cap: 4 season cards (real or celestial-wild) that cover all four
-// seasons. Real seasons must be distinct; celestial wilds fill any missing season.
-function validSeasonCap(cards){
-  if(cards.length!==4) return false;
-  if(!cards.every(c=>c.kind==="season")) return false;
-  const reals=cards.filter(c=>!c.wild);
-  return new Set(reals.map(c=>c.season)).size===reals.length;
+function distinctSeasons(cards){return cards.length===4 && cards.every(c=>c.kind==="season") && new Set(cards.map(c=>c.season)).size===4;}
+function setFogged(s){return s.cards.some(c=>c.fog);}
+/* Each laid set has a unique identity — a direction (all four terrains of one direction)
+   or a terrain (all four directions of one terrain). You can't lay the same one twice,
+   and you build toward at most four sets. */
+function setIdentity(cards){
+  const reals=cards.filter(c=>c.kind==="terrain");if(!reals.length)return null;
+  const dirs=new Set(reals.map(c=>c.direction)),ters=new Set(reals.map(c=>c.terrain));
+  if(ters.size===1 && dirs.size===reals.length && dirs.size>1)return "ter:"+[...ters][0];
+  return "dir:"+[...dirs][0]; // default (incl. single-real/wild-heavy sets) classifies by direction
 }
+function canAddSet(who,terrCards){
+  if(who.sets.length>=4)return {ok:false,msg:"You can only build four sets — that's the whole path."};
+  const id=setIdentity(terrCards);
+  if(id!==null && who.sets.some(s=>setIdentity(s.cards)===id))return {ok:false,msg:"You already have that set laid down — each direction and each terrain set is unique."};
+  return {ok:true};
+}
+function findSetIn(hand){
+  const terr=hand.filter(c=>c.kind==="terrain"),mts=hand.filter(c=>c.special==="Mountain");
+  for(const dir of DIRECTIONS){const inDir=terr.filter(c=>c.direction===dir);const byT={};inDir.forEach(c=>byT[c.terrain]=byT[c.terrain]||c);
+    const d=Object.values(byT),miss=4-d.length;if(d.length>=1&&miss>=0&&miss<=mts.length)return[...d,...mts.slice(0,miss)];}
+  for(const ter of TERRAINS){const inTer=terr.filter(c=>c.terrain===ter);const byD={};inTer.forEach(c=>byD[c.direction]=byD[c.direction]||c);
+    const d=Object.values(byD),miss=4-d.length;if(d.length>=1&&miss>=0&&miss<=mts.length)return[...d,...mts.slice(0,miss)];}
+  return null;
+}
+function hintIds(hand){
+  const ids=new Set();
+  const bs={};SEASONS.forEach(s=>bs[s]=hand.find(c=>c.season===s));
+  if(SEASONS.every(s=>bs[s]))SEASONS.forEach(s=>ids.add(bs[s].id));
+  const f=findSetIn(hand);if(f&&canAddSet(G.player,f).ok)f.forEach(c=>ids.add(c.id)); // don't glow a set you can't add (dup / already 4)
+  return ids;
+}
+function mountainNeeds(s,tc){
+  // Can your terrain card tc fill a Mountain's slot in opponent set s?
+  const reals=s.cards.filter(c=>c.kind==="terrain");
+  if(!reals.length||tc.kind!=="terrain")return false;
+  const dirs=new Set(reals.map(c=>c.direction)),ters=new Set(reals.map(c=>c.terrain));
+  // direction-based set: reals share a direction; your card fills a missing terrain in that direction
+  if(dirs.size===1 && tc.direction===[...dirs][0] && !ters.has(tc.terrain)) return true;
+  // terrain-based set: reals share a terrain; your card fills a missing direction of that terrain
+  if(ters.size===1 && tc.terrain===[...ters][0] && !dirs.has(tc.direction)) return true;
+  return false;
+}
+/* A terrain card can fill a Mountain slot in ANY unlocked, unfogged set — the
+   opponent's (a steal) OR your own (reclaim your wild by completing with the real card). */
+function swapTargets(tc){
+  if(!tc||tc.kind!=="terrain")return [];
+  const cand=[...G.player.sets.map(s=>({s,mine:true})),...G.ai.sets.map(s=>({s,mine:false}))];
+  return cand.filter(o=>!o.s.locked && o.s.cards.some(c=>c.special==="Mountain"&&!c.fog) && mountainNeeds(o.s,tc));
+}
+function stealableTargets(tc){return swapTargets(tc);} // back-compat alias
 
 /* ---------- RENDER ---------- */
-function cardEl(c,{mini=false,playable=false,faceDown=false}={}){
+function cardEl(c,{mini=false,playable=false,faceDown=false,hint=false,stealable=false}={}){
   const d=document.createElement("div");
-  d.className="card"+(mini?" mini":"")+(playable?" playable":"")+(G.sel.has(c&&c.id)?" sel":"")+(c&&c.fog?" fogged":"");
-  if(faceDown){ d.classList.add("back"); d.innerHTML='<div class="enso">◯</div>'; return d; }
-  let color="var(--neutral)", icon="❔", name="", foot="";
-  if(c.kind==="terrain"){ color=DIRCOLOR[c.direction]; icon=TERRAINICON[c.terrain];
-    name=c.terrain; foot=c.direction; }
-  else if(c.kind==="season"){
-    if(c.wild){ color="var(--gold)"; icon="✦"; name=c.celestial; foot="Celestial Wild"; }
-    else { color=SEASONCOLOR[c.season]; icon=SEASONICON[c.season]; name=c.season; foot="Season"; }
-  }
-  else { color="var(--neutral)"; icon=SPECIAL[c.special]; name=c.special; foot="Special"; }
-  if(USE_ART && c.kind==="terrain"){
-    d.style.backgroundImage=`url(${ART_BASE}${c.direction}_${c.terrain}.jpg)`;
-    d.style.backgroundSize="cover";
-  }
+  d.className="card"+(mini?" mini":"")+(playable?" playable":"")+(c&&G.sel.has(c.id)?" sel":"")
+    +(c&&c.fog?" fogged":"")+(hint?" hint":"")+(stealable?" stealable":"");
+  if(faceDown){d.classList.add("back");d.innerHTML='<div class="enso">◯</div>';return d;}
+  let color="var(--neutral)",icon="❔",name="",foot="";
+  if(c.kind==="terrain"){color=DIRCOLOR[c.direction];icon=TERRAINICON[c.terrain];name=c.terrain;foot=c.direction;}
+  else if(c.kind==="season"){color=SEASONCOLOR[c.season];icon=SEASONICON[c.season];name=c.season;foot="Season";}
+  else{icon=SPECIAL[c.special];name=c.special;foot="Special";}
+  if(USE_ART&&c.kind==="terrain"){d.style.backgroundImage=`url(${ART_BASE}${c.direction}_${c.terrain}.jpg)`;d.style.backgroundSize="cover";}
   d.innerHTML=`<div class="top" style="background:${color}">${name}</div>
     <div class="body"><div class="icon">${icon}</div><div class="name">${c.kind==='terrain'?c.direction:''}</div></div>
     <div class="foot" style="background:${color}">${foot}</div>`;
-  if(playable) d.onclick=()=>toggleSel(c.id);
+  if(playable)d.onclick=()=>toggleSel(c.id);
   return d;
 }
-
-function setEl(set, owner){
-  const wrap=document.createElement("div");
-  wrap.className="set"+(set.locked?" locked":"");
-  const ev=evaluateSet(set.cards);
-  const scount=set.seasonCards.length;
-  wrap.innerHTML=`<div class="setlabel">${set.locked?"🔒 ":""}${ev.label||"set"} · seasons ${scount}/4</div>`;
-  const cc=document.createElement("div"); cc.className="cards";
+function setEl(set){
+  const wrap=document.createElement("div");wrap.className="set"+(set.locked?" locked":"");
+  const ev=evaluateSet(set.cards);const sc=(set.seasonCards||[]).length;
+  wrap.innerHTML=`<div class="setlabel">${set.locked?"🔒 ":""}${ev.label||"set"} · seasons ${sc}/4</div>`;
+  const cc=document.createElement("div");cc.className="cards";
   set.cards.forEach(c=>cc.appendChild(cardEl(c,{mini:true})));
-  set.seasonCards.forEach(c=>cc.appendChild(cardEl(c,{mini:true})));
-  wrap.appendChild(cc);
-  return wrap;
+  (set.seasonCards||[]).forEach(c=>cc.appendChild(cardEl(c,{mini:true})));
+  wrap.appendChild(cc);return wrap;
 }
-
+function reserveEl(reserve){
+  const wrap=document.createElement("div");wrap.className="set reserve";
+  wrap.innerHTML=`<div class="setlabel">🍂 Season reserve — waiting for a set</div>`;
+  const cc=document.createElement("div");cc.className="cards";
+  reserve.forEach(c=>cc.appendChild(cardEl(c,{mini:true})));wrap.appendChild(cc);return wrap;
+}
 function render(){
   document.getElementById("pScore").textContent=G.player.sets.filter(s=>s.locked).length;
   document.getElementById("aScore").textContent=G.ai.sets.filter(s=>s.locked).length;
-  document.getElementById("target").textContent=TARGET;
-  document.getElementById("target2").textContent=TARGET;
+  document.getElementById("target").textContent=TARGET;document.getElementById("target2").textContent=TARGET;
   document.getElementById("handCount").textContent=G.player.hand.length+" cards";
-
-  const aHand=document.getElementById("aHand"); aHand.innerHTML="";
+  const aHand=document.getElementById("aHand");aHand.innerHTML="";
   G.ai.hand.forEach(()=>aHand.appendChild(cardEl(null,{mini:true,faceDown:true})));
-  const aSets=document.getElementById("aSets"); aSets.innerHTML="";
-  G.ai.sets.forEach(s=>aSets.appendChild(setEl(s,"ai")));
-
-  const draw=document.getElementById("drawPile");
-  draw.innerHTML=`<div>${G.draw.length}<br>draw</div>`;
-  const disc=document.getElementById("discardPile"); disc.innerHTML="";
-  if(G.discard.length){ disc.appendChild(cardEl(G.discard[G.discard.length-1],{})); }
-  else disc.textContent="empty";
-
-  const pSets=document.getElementById("pSets"); pSets.innerHTML="";
-  G.player.sets.forEach(s=>pSets.appendChild(setEl(s,"player")));
-
-  const pHand=document.getElementById("pHand"); pHand.innerHTML="";
-  const canClick = G.turn==="player" && G.drewThisTurn && !G.over;
-  G.player.hand.forEach(c=>pHand.appendChild(cardEl(c,{playable:canClick})));
-
+  const aSets=document.getElementById("aSets");aSets.innerHTML="";
+  G.ai.sets.forEach(s=>aSets.appendChild(setEl(s)));if(G.ai.reserve)aSets.appendChild(reserveEl(G.ai.reserve));
+  document.getElementById("drawPile").innerHTML=`<div>${G.draw.length}<br>draw</div>`;
+  const disc=document.getElementById("discardPile");disc.innerHTML="";
+  if(G.discard.length)disc.appendChild(cardEl(G.discard[G.discard.length-1],{}));else disc.textContent="empty";
+  const pSets=document.getElementById("pSets");pSets.innerHTML="";
+  G.player.sets.forEach(s=>pSets.appendChild(setEl(s)));if(G.player.reserve)pSets.appendChild(reserveEl(G.player.reserve));
+  const pHand=document.getElementById("pHand");pHand.innerHTML="";
+  const canClick=G.turn==="player"&&G.drewThisTurn&&!G.over;
+  const hints=(canClick&&SHOW_HINTS)?hintIds(G.player.hand):new Set();
+  G.player.hand.forEach(c=>{
+    const stealable=SHOW_HINTS&&canClick&&c.kind==="terrain"&&swapTargets(c).length>0;
+    pHand.appendChild(cardEl(c,{playable:canClick,hint:hints.has(c.id),stealable}));
+  });
   updateControls();
 }
-
-/* ---------- SELECTION ---------- */
-function toggleSel(id){ if(G.sel.has(id))G.sel.delete(id); else G.sel.add(id); render(); }
-function clearSel(){ G.sel.clear(); render(); }
-function selCards(){ return G.player.hand.filter(c=>G.sel.has(c.id)); }
-
+/* ---------- SELECTION / CONTROLS ---------- */
+function toggleSel(id){if(G.sel.has(id))G.sel.delete(id);else G.sel.add(id);render();}
+function clearSel(){G.sel.clear();render();}
+function selCards(){return G.player.hand.filter(c=>G.sel.has(c.id));}
 function updateControls(){
-  const my = G.turn==="player" && !G.over;
+  const my=G.turn==="player"&&!G.over&&G.drewThisTurn;
   const sel=selCards();
-  // Lay set: exactly 4 terrain/mountain selected forming a valid set
-  const laySet = sel.length===4 && sel.every(c=>c.kind==="terrain"||c.special==="Mountain") && evaluateSet(sel).ok;
-  document.getElementById("btnLay").disabled = !(my && G.drewThisTurn && laySet);
-  // Cap: 4 season cards covering all four seasons (celestial wilds fill gaps) AND a completed uncapped set
-  const fourSeasons = validSeasonCap(sel);
-  const hasCappable = G.player.sets.some(s=>!s.locked && !setFogged(s));
-  document.getElementById("btnCap").disabled = !(my && G.drewThisTurn && fourSeasons && hasCappable);
-  // Special: exactly 1 special selected
-  const oneSpecial = sel.length===1 && sel[0].kind==="special" && sel[0].special!=="Mountain";
-  document.getElementById("btnSpecial").disabled = !(my && G.drewThisTurn && oneSpecial);
-  // Discard: exactly 1 selected, after drawing
-  document.getElementById("btnDiscard").disabled = !(my && G.drewThisTurn && sel.length===1);
-
+  const terr=sel.filter(c=>c.kind==="terrain"||c.special==="Mountain");
+  const seas=sel.filter(c=>c.kind==="season");
+  const laysTerrain=terr.length===4&&seas.length===0&&evaluateSet(terr).ok&&canAddSet(G.player,terr).ok;
+  const laysSeason =seas.length===4&&terr.length===0&&distinctSeasons(seas);
+  const laysBoth   =terr.length===4&&seas.length===4&&evaluateSet(terr).ok&&distinctSeasons(seas)&&canAddSet(G.player,terr).ok;
+  document.getElementById("btnLay").disabled=!(my&&(laysTerrain||laysSeason||laysBoth));
+  const swaps=sel.length===1&&sel[0].kind==="terrain"?swapTargets(sel[0]):[];
+  const canSteal=swaps.length>0;
+  const btnSteal=document.getElementById("btnSteal");
+  btnSteal.disabled=!(my&&canSteal);
+  if(my&&canSteal){const anyMine=swaps.some(o=>o.mine),anyOpp=swaps.some(o=>!o.mine);
+    btnSteal.textContent=anyOpp&&!anyMine?"Steal Mountain":anyMine&&!anyOpp?"Reclaim Mountain":"Swap Mountain";}
+  else btnSteal.textContent="Steal Mountain";
+  // Fog only if there's an unfogged Mountain in some unlocked set to freeze; Wind only if your own Mountain is fogged.
+  let oneSpecial=false;
+  if(sel.length===1){const sp=sel[0].special;
+    if(sp==="Fog")oneSpecial=[...G.player.sets,...G.ai.sets].some(s=>!s.locked&&s.cards.some(c=>c.special==="Mountain"&&!c.fog));
+    else if(sp==="Wind")oneSpecial=G.player.sets.some(s=>s.cards.some(c=>c.fog));}
+  document.getElementById("btnSpecial").disabled=!(my&&oneSpecial);
+  document.getElementById("btnDiscard").disabled=!(my&&sel.length===1);
   const hint=document.getElementById("hint");
-  if(G.over){ hint.textContent=""; }
-  else if(G.turn!=="player"){ hint.textContent="Opponent is thinking…"; }
-  else if(!G.drewThisTurn){ hint.textContent="Draw a card (click the draw or discard pile) to begin your turn."; }
-  else { hint.textContent="Select cards, then choose an action — or discard one card to end your turn."; }
+  if(G.over)hint.textContent="";
+  else if(G.turn!=="player")hint.textContent="Opponent is thinking…";
+  else if(!G.drewThisTurn)hint.textContent="Draw a card (click the draw or discard pile) to begin your turn.";
+  else hint.textContent="Gold-glowing cards form a set you can lay · green = can complete a Mountain set (steal the opponent's, or reclaim your own). Select, act — or discard one to end your turn.";
 }
-
-function setFogged(s){ return s.cards.some(c=>c.fog); }
-
-/* ---------- PLAYER ACTIONS ---------- */
+/* ---------- DRAW ---------- */
 function drawFrom(pile){
-  if(G.over||G.turn!=="player"||G.drewThisTurn) return;
-  if(pile==="draw"){ if(!G.draw.length) reshuffle(); if(!G.draw.length)return;
-    const c=G.draw.pop(); G.player.hand.push(c); logMsg("You drew from the deck."); }
-  else { if(!G.discard.length)return; const c=G.discard.pop(); G.player.hand.push(c);
-    logMsg("You took the "+cardName(c)+" from the discard."); }
-  G.drewThisTurn=true; render();
+  if(G.over||G.turn!=="player"||G.drewThisTurn)return;
+  if(pile==="draw"){const c=popDeck();if(!c)return;
+    if(c.special==="Sun"){return playerSunDraw(c);} // Sun = your accelerated draw: reveal three, keep one, then play on and discard as normal
+    if(isImmediate(c)){G.drewThisTurn=true;logMsg("You drew the "+c.special+"…");G.eventQueue.push(c);
+      // Drawing a sky event IS your turn — it resolves and the turn ends (no extra discard).
+      return flushEvents(()=>{render();if(checkWin())return;endTurn();});}
+    G.player.hand.push(c);logMsg("You drew from the deck.");}
+  else{if(!G.discard.length)return;
+    if(isImmediate(G.discard[G.discard.length-1])){document.getElementById("hint").textContent="That spent sky card can't be taken — draw from the deck instead.";return;}
+    const c=G.discard.pop();G.player.hand.push(c);logMsg("You took the "+cardName(c)+" from the discard.");}
+  G.drewThisTurn=true;render();
 }
-function cardName(c){ if(c.kind==="terrain")return c.direction+" "+c.terrain;
-  if(c.kind==="season")return c.wild?c.celestial:c.season; return c.special; }
-
-function layDownSet(){
-  const sel=selCards(); if(sel.length!==4||!evaluateSet(sel).ok) return;
-  const ev=evaluateSet(sel);
-  G.player.hand=G.player.hand.filter(c=>!G.sel.has(c.id));
-  G.player.sets.push({cards:sel, seasonCards:[], locked:false});
-  logMsg("You laid down a set: "+ev.label+". (This was your discard for the turn.)");
-  G.sel.clear();
-  drawUpTo(G.player);
-  endTurn();  // laying a set counts as the discard
+function reshuffle(){if(!G.discard.length)return;const keep=G.discard.pop();G.draw=shuffle(G.discard);G.discard=[keep];logMsg("(The draw pile was refilled from the discards.)");}
+function popDeck(){if(!G.draw.length)reshuffle();if(!G.draw.length)return null;return G.draw.pop();}
+/* ============================================================
+   TABLE EVENTS — Storm, Sun, Moon are never held or played.
+   The instant one is drawn from the deck it takes the whole table:
+     ⚡ Storm — everyone throws down their hand and draws seven anew
+     ☀️ Sun   — the drawer reveals three and keeps one (the Sun + rejects melt away; the turn then discards as normal)
+     🌙 Moon  — each player may release up to three and draw as many
+   You make hay while the sun shines; you don't hoard it.
+   ============================================================ */
+function isImmediate(c){return c&&c.kind==="special"&&(c.special==="Storm"||c.special==="Sun"||c.special==="Moon");}
+let STORM_ACTIVE=false;
+function handleDrawnStorm(stormCard){
+  STORM_ACTIVE=true;
+  G.discard.push(...G.player.hand,...G.ai.hand);
+  G.eventSpent.push(stormCard);           // held aside so it can't recycle mid-chain
+  G.player.hand=[];G.ai.hand=[];
+  logMsg("⚡ STORM! The card is drawn and the sky breaks — every player throws down their whole hand and draws seven fresh.");
+  drawUpTo(G.player);drawUpTo(G.ai);
+  STORM_ACTIVE=false;
+  render();
 }
-function capWithSeasons(){
-  const sel=selCards();
-  if(!validSeasonCap(sel)) return;
-  const target=G.player.sets.find(s=>!s.locked && !setFogged(s));
-  if(!target){ alert("You need a completed, un-fogged set to cap."); return; }
-  target.seasonCards=sel; target.locked=true;
-  G.player.hand=G.player.hand.filter(c=>!G.sel.has(c.id));
-  logMsg("🔒 You capped a set with all four seasons — it is permanently yours!");
-  G.sel.clear();
-  if(checkWin()) return;
-  // capping is your play; still must discard to end
-  render(); updateControls();
-  document.getElementById("hint").textContent="Set locked! Now discard one card to end your turn.";
-}
-function playSpecial(){
-  const sel=selCards(); if(sel.length!==1) return; const c=sel[0];
-  G.player.hand=G.player.hand.filter(x=>x.id!==c.id); G.sel.clear();
-  resolveSpecial(c,"player");
-}
-function discardSelected(){
-  const sel=selCards(); if(sel.length!==1) return; const c=sel[0];
-  G.player.hand=G.player.hand.filter(x=>x.id!==c.id); G.discard.push(c);
-  logMsg("You discarded the "+cardName(c)+".");
-  G.sel.clear(); endTurn();
-}
-function drawUpTo(who){ while(who.hand.length<7){ if(!G.draw.length)reshuffle(); if(!G.draw.length)break; who.hand.push(G.draw.pop()); } }
-function reshuffle(){ if(!G.discard.length)return; const keep=G.discard.pop();
-  G.draw=shuffle(G.discard); G.discard=[keep]; logMsg("(The draw pile was refilled from the discards.)"); }
-
-/* ---------- SPECIALS ---------- */
-function resolveSpecial(c,owner){
-  const who = owner==="player"?"You":"The opponent";
-  if(c.special==="Storm"){
-    logMsg("⚡ "+who+" played STORM — everyone discards their hand and draws 7.");
-    G.discard.push(...G.player.hand,...G.ai.hand); G.player.hand=[]; G.ai.hand=[];
-    G.discard.push(c);
-    drawUpTo(G.player); drawUpTo(G.ai);
-  } else if(c.special==="Moon"){
-    G.discard.push(c);
-    if(owner==="player"){ moonModal(); return; }
-    else { // AI: cycle its worst up-to-3
-      const toss=aiWorst(G.ai.hand,3); toss.forEach(x=>{G.ai.hand=G.ai.hand.filter(h=>h.id!==x.id);G.discard.push(x);});
-      drawUpTo(G.ai); logMsg("🌙 Opponent cycled "+toss.length+" card(s) with the Moon.");
-    }
-  } else if(c.special==="Sun"){
-    G.discard.push(c);
-    const reveal=[]; for(let i=0;i<4;i++){ if(!G.draw.length)reshuffle(); if(G.draw.length)reveal.push(G.draw.pop()); }
-    if(owner==="player"){ sunModal(reveal); return; }
-    else { // AI picks best, player picks best of the rest
-      const aiPick=aiBest(reveal); if(aiPick){G.ai.hand.push(aiPick);reveal.splice(reveal.indexOf(aiPick),1);}
-      logMsg("☀️ Opponent played the Sun. Choose a card to keep.");
-      sunModal(reveal,true); return;
-    }
-  } else if(c.special==="Fog"){
-    // fog an opponent's unlocked mountain-set
-    const targetSet = (owner==="player"?G.ai:G.player).sets.find(s=>!s.locked && s.cards.some(x=>x.special==="Mountain"&&!x.fog));
-    if(targetSet){ const m=targetSet.cards.find(x=>x.special==="Mountain"&&!x.fog); m.fog=true;
-      logMsg("🌫️ "+who+" fogged a Mountain — that set is frozen until the fog clears."); }
-    else { logMsg("🌫️ "+who+" played Fog, but there was no Mountain to freeze. It drifts away."); }
-    G.discard.push(c);
-  } else if(c.special==="Wind"){
-    const anyFog = [...G.player.sets,...G.ai.sets].flatMap(s=>s.cards).find(x=>x.fog);
-    if(anyFog){ anyFog.fog=false; logMsg("🍃 "+who+" played Wind — the fog clears."); }
-    else logMsg("🍃 "+who+" played Wind, but there was no fog. A gentle breeze passes.");
-    G.discard.push(c);
+function drawUpTo(who){
+  const aside=[];
+  while(who.hand.length<7){
+    const c=popDeck();if(!c)break;
+    if(c.special==="Storm"&&STORM_ACTIVE){G.discard.push(c);continue;} // spent during this same storm — set aside
+    if(c.special==="Sun"){aside.push(c);continue;}                     // the Sun only fires as a turn's own draw — never held, never fired during a mass redraw
+    if(isImmediate(c)){G.eventQueue.push(c);continue;}                 // Storm/Moon resolve after this batch
+    who.hand.push(c);
   }
-  if(owner==="player"){ if(checkWin())return; render();
-    document.getElementById("hint").textContent="Special resolved. Now discard one card to end your turn."; updateControls(); }
+  if(aside.length)G.draw.unshift(...aside); // any set-aside Suns go to the bottom of the deck to come round again
+}
+function removeFromHand(who,cards){const ids=new Set(cards.map(c=>c.id));who.hand=who.hand.filter(c=>!ids.has(c.id));}
+
+/* Resolve queued table events in strict sky-priority, one at a time (each may pause
+   for the player's choice), then run `done` to resume whatever was interrupted.
+   Priority: ⚡ Storm first — its clouds blot out any Sun/Moon in the same moment;
+   then ☀️ Sun (the brighter light); then 🌙 Moon. */
+function retireEvents(cards){ // spent sky cards leave to the BOTTOM of the deck — never face-up anywhere; may come round again on a later pass
+  if(cards.length)G.draw.unshift(...cards);
+}
+function flushEvents(done){
+  if(G.over||!G.eventQueue.length){
+    G.eventQueue.length=0;
+    if(G.eventSpent.length){retireEvents(G.eventSpent);G.eventSpent=[];} // chain settled — spent events leave to the deck bottom
+    if(done)done();return;
+  }
+  const stormIdx=G.eventQueue.findIndex(c=>c.special==="Storm");
+  if(stormIdx>=0){
+    const storm=G.eventQueue[stormIdx];
+    const clouded=G.eventQueue.filter(c=>c!==storm); // Sun/Moon caught in the same moment are clouded out
+    if(clouded.length){G.eventSpent.push(...clouded);logMsg("⚡ The storm clouds blot out the "+clouded.map(c=>c.special).join(" and the ")+" — only the tempest is felt.");}
+    G.eventQueue.length=0;
+    handleDrawnStorm(storm);   // resets both hands (its own redraw may surface fresh events)
+    return flushEvents(done);  // …which are then resolved in turn
+  }
+  G.eventQueue.sort((a,b)=>(a.special==="Sun"?0:1)-(b.special==="Sun"?0:1)); // Sun before Moon
+  const c=G.eventQueue.shift();
+  G.eventNext=()=>flushEvents(done);
+  if(c.special==="Sun"){G.draw.unshift(c);const n=G.eventNext;G.eventNext=null;if(n)n();} // Sun no longer fires from the queue — it resolves only as the drawer's own turn draw
+  else if(c.special==="Moon")moonEvent(c);
+  else{const n=G.eventNext;G.eventNext=null;if(n)n();}
+}
+function eventDeckDraw(){ // draw one for an event's own needs; immediates re-queue rather than nest
+  const c=popDeck();if(!c)return null;
+  if(isImmediate(c)){G.eventQueue.push(c);return null;}
+  return c;
+}
+/* ☀️ Sun = the drawer's accelerant, and ONLY the drawer's. Whoever draws it
+   reveals three from the deck and keeps one — that kept card IS their draw for
+   the turn. The Sun itself and the two cards not kept simply MELT AWAY (they go
+   to the bottom of the deck; they never touch the discard pile and never count
+   as a discard). The turn then proceeds normally: the drawer plays and then
+   discards one card to end — so the hand returns to exactly seven, like every
+   other turn. The Sun does not touch the opponent's hand. */
+function revealOrdinary(n){ // reveal n ordinary cards from the deck; any sky card among them is set aside and re-buried
+  const out=[],aside=[];let guard=0;
+  while(out.length<n&&guard++<300){const c=popDeck();if(!c)break;
+    if(isImmediate(c)){aside.push(c);continue;}
+    out.push(c);}
+  if(aside.length)G.draw.unshift(...aside);
+  return out;
+}
+function playerSunDraw(sun){
+  G.drewThisTurn=true;
+  const drawn=revealOrdinary(3);
+  logMsg("☀️ You drew the Sun — reveal three and keep one. (The Sun and the two you don't keep melt away — they aren't discards.)");
+  if(!drawn.length){G.draw.unshift(sun);render();document.getElementById("hint").textContent="The deck had nothing to sift. Act, or discard one card to end your turn.";updateControls();return;}
+  const finish=(kept)=>{G.player.hand.push(kept);
+    G.draw.unshift(sun,...drawn.filter(x=>x.id!==kept.id)); // Sun + the two rejects melt to the bottom of the deck — never the discard pile
+    logMsg("☀️ You kept the "+cardName(kept)+"; the Sun and the other two melted away.");
+    hideOverlay();render();sunContinue();};
+  if(drawn.length===1){finish(drawn[0]);return;}
+  const m=document.getElementById("modal");
+  m.innerHTML="<h2>☀️ Sun — keep one</h2><p style='max-width:430px;margin:8px auto;font-size:13px;'>The Sun is your draw this turn: keep the best of three. The Sun and the other two melt away — they don't count as discards. You'll still discard one card to finish your turn (back to seven).</p><div class='picks' id='sp'></div>";
+  drawn.forEach(cd=>{const e=cardEl(cd,{});e.style.cursor="pointer";e.onclick=()=>finish(cd);m.querySelector("#sp").appendChild(e);});
+  showOverlay();
+}
+function sunContinue(){if(checkWin())return;document.getElementById("hint").textContent="Sun kept — lay a set, steal a Mountain, or discard one card to end your turn.";updateControls();}
+function aiSunDraw(sun){
+  const drawn=revealOrdinary(3);
+  if(drawn.length){const keep=aiBest(drawn);G.ai.hand.push(keep);
+    G.draw.unshift(sun,...drawn.filter(x=>x.id!==keep.id)); // Sun + rejects melt to the deck bottom
+    logMsg("☀️ The opponent drew the Sun — sifted three and kept one.");}
+  else{G.draw.unshift(sun);logMsg("☀️ The opponent drew the Sun, but the deck was spent.");}
+  render();setTimeout(aiPlay,600);
+}
+function moonEvent(c){
+  G.eventSpent.push(c);
+  aiMoonCycle();
+  logMsg("🌙 The Moon rises — you and the opponent may each release up to three cards and draw as many anew.");
+  moonModal();
 }
 
-/* ---------- MODALS (player Moon / Sun) ---------- */
+/* ---------- LAY DOWN (terrain set / season set / both) ---------- */
+function layDownSet(){
+  const sel=selCards();
+  const terr=sel.filter(c=>c.kind==="terrain"||c.special==="Mountain");
+  const seas=sel.filter(c=>c.kind==="season");
+  if(terr.length===4&&seas.length===4&&evaluateSet(terr).ok&&distinctSeasons(seas)){
+    const chk=canAddSet(G.player,terr);if(!chk.ok){alert(chk.msg);return;}
+    removeFromHand(G.player,sel);G.player.sets.push({cards:terr,seasonCards:seas,locked:true});
+    logMsg("🔒 You laid a full set AND capped it with the four seasons — locked!");return afterLay();
+  }
+  if(terr.length===4&&seas.length===0&&evaluateSet(terr).ok){
+    const chk=canAddSet(G.player,terr);if(!chk.ok){alert(chk.msg);return;}
+    removeFromHand(G.player,sel);const set={cards:terr,seasonCards:[],locked:false};
+    if(G.player.reserve){set.seasonCards=G.player.reserve;set.locked=true;G.player.reserve=null;logMsg("🔒 You laid a set and your season reserve locked it instantly!");}
+    else logMsg("You laid down a terrain set: "+evaluateSet(terr).label+".");
+    G.player.sets.push(set);return afterLay();
+  }
+  if(seas.length===4&&terr.length===0&&distinctSeasons(seas)){
+    const cappable=G.player.sets.filter(s=>!s.locked&&!setFogged(s));
+    if(cappable.length===0){
+      if(!G.player.reserve){G.player.reserve=seas;removeFromHand(G.player,sel);logMsg("🍂 You laid a season set as a reserve — it will lock your next completed set.");return afterLay();}
+      alert("You already have a season reserve waiting for a set.");return;
+    }
+    if(cappable.length===1){cappable[0].seasonCards=seas;cappable[0].locked=true;removeFromHand(G.player,sel);logMsg("🔒 You capped a set with the four seasons — locked!");return afterLay();}
+    return capChooseModal(seas,sel,cappable); // more than one set — you choose which to lock
+  }
+}
+function capChooseModal(seas,sel,cappable){
+  const m=document.getElementById("modal");
+  m.innerHTML="<h2>🍂 Cap which set?</h2><p style='max-width:430px;margin:8px auto;font-size:13px;'>The four seasons lock the set you choose — safe from stealing forever. A set holding a Mountain is a good one to lock down.</p><div class='picks' id='cp' style='flex-direction:column;gap:10px;'></div>";
+  cappable.forEach(s=>{
+    const wrap=document.createElement("div");wrap.style.cssText="cursor:pointer;border:1px solid #b8912f;border-radius:8px;padding:6px;background:#efe6cf;";
+    const hasM=s.cards.some(c=>c.special==="Mountain");
+    const lbl=document.createElement("div");lbl.style.cssText="font-size:12px;margin-bottom:4px;color:#5a4a22;font-weight:bold;";
+    lbl.textContent=(evaluateSet(s.cards).label||"set")+(hasM?"  ⛰️ has a Mountain":"");
+    const cc=document.createElement("div");cc.style.cssText="display:flex;gap:4px;justify-content:center;";
+    s.cards.forEach(c=>cc.appendChild(cardEl(c,{mini:true})));
+    wrap.appendChild(lbl);wrap.appendChild(cc);
+    wrap.onclick=()=>{s.seasonCards=seas;s.locked=true;removeFromHand(G.player,sel);
+      logMsg("🔒 You capped the "+(evaluateSet(s.cards).label||"set")+" with the four seasons — locked forever!");hideOverlay();afterLay();};
+    m.querySelector("#cp").appendChild(wrap);
+  });
+  showOverlay();
+}
+function afterLay(){G.sel.clear();drawUpTo(G.player);flushEvents(()=>{if(checkWin())return;endTurn();});}
+
+/* ---------- STEAL MOUNTAIN ---------- */
+function stealMountain(){
+  const sel=selCards();if(sel.length!==1||sel[0].kind!=="terrain")return;
+  const tc=sel[0];const targets=swapTargets(tc);if(!targets.length)return;
+  if(targets.length===1)return doSwap(tc,targets[0]);
+  // more than one set this card could complete — let the player pick
+  const m=document.getElementById("modal");
+  m.innerHTML="<h2>⛰️ Complete which set?</h2><p style='max-width:400px;margin:8px auto;font-size:13px;'>Slot your "+cardName(tc)+" into a Mountain's place and take the Mountain into your hand.</p><div class='picks' id='mp'></div>";
+  targets.forEach(o=>{const mtn=o.s.cards.find(c=>c.special==="Mountain"&&!c.fog);
+    const e=cardEl(mtn,{});e.style.cursor="pointer";e.title=o.mine?"your set":"opponent's set";
+    e.onclick=()=>{hideOverlay();doSwap(tc,o);};
+    m.querySelector("#mp").appendChild(e);});
+  showOverlay();
+}
+function doSwap(tc,o){
+  const s=o.s;const m=s.cards.find(c=>c.special==="Mountain"&&!c.fog);if(!m)return;
+  s.cards[s.cards.indexOf(m)]=tc;
+  removeFromHand(G.player,[tc]);
+  m.fog=false;G.player.hand.push(m);
+  if(o.mine)logMsg("⛰️ You completed your own set with the "+cardName(tc)+" and reclaimed your Mountain.");
+  else logMsg("⛰️ You completed the opponent's set with your "+cardName(tc)+" and STOLE their Mountain!");
+  G.sel.clear();render();
+  document.getElementById("hint").textContent=(o.mine?"Mountain reclaimed.":"Mountain stolen.")+" Now discard one card to end your turn.";
+  updateControls();
+}
+/* ---------- SPECIALS ---------- */
+function playSpecial(){const sel=selCards();if(sel.length!==1)return;const c=sel[0];
+  removeFromHand(G.player,[c]);G.sel.clear();resolveSpecial(c,"player");}
+function discardSelected(){const sel=selCards();if(sel.length!==1)return;const c=sel[0];
+  removeFromHand(G.player,[c]);G.discard.push(c);logMsg("You discarded the "+cardName(c)+".");G.sel.clear();endTurn();}
+function returnToDraw(cards){G.draw.push(...cards);shuffle(G.draw);}
+/* Only the targeted family — Fog and Wind — is ever *played* from a hand.
+   Storm, Sun and Moon are table events that fire on draw (see TABLE EVENTS). */
+function resolveSpecial(c,owner){
+  const who=owner==="player"?"You":"The opponent";
+  if(c.special==="Fog"){
+    if(owner==="player"){fogPlayerModal(c);return;} // player: the Fog is laid on the Mountain and IS the turn's discard (handled in the modal)
+    G.discard.push(c); // opponent's spent Fog still goes to the pile
+    const ts=G.player.sets.find(s=>!s.locked&&s.cards.some(x=>x.special==="Mountain"&&!x.fog));
+    if(ts){ts.cards.find(x=>x.special==="Mountain"&&!x.fog).fog=true;logMsg("🌫️ The opponent fogged your Mountain — that set is frozen (no steal, no cap) until Wind clears it.");}
+    else logMsg("🌫️ The opponent played Fog, but there was no Mountain to freeze. It drifts away.");}
+  else if(c.special==="Wind"){const mine=owner==="player"?G.player.sets:G.ai.sets;
+    const f=mine.flatMap(s=>s.cards).find(x=>x.fog); // clear a fog freezing YOUR OWN Mountain
+    if(f){f.fog=false;logMsg("🍃 "+who+" played Wind — the fog over "+(owner==="player"?"your":"its")+" Mountain lifts.");}
+    else logMsg("🍃 "+who+" played Wind, but there was no fog to clear.");
+    G.discard.push(c); // the spent Wind IS the discard for this turn
+    if(owner==="player"){logMsg("Playing the Wind was your discard — turn over.");if(checkWin())return;render();return endTurn();}
+    return; // AI's turn is ended by aiPlay after this returns
+  }
+  if(owner==="player"){if(checkWin())return;render();document.getElementById("hint").textContent="Special resolved. Now discard one card to end your turn.";updateControls();}
+}
 function moonModal(){
   const m=document.getElementById("modal");
-  m.innerHTML="<h2>🌙 Moon — Reflect &amp; Renew</h2><p>Select up to 3 cards to release, then draw the same number.</p><div class='picks' id='moonPicks'></div><button class='primary' onclick='moonConfirm()'>Cycle Selected</button>";
-  const p=m.querySelector("#moonPicks"); G.moonSel=new Set();
-  G.player.hand.forEach(c=>{ const e=cardEl(c,{mini:true,playable:false});
-    e.style.cursor="pointer"; e.onclick=()=>{ if(G.moonSel.has(c.id))G.moonSel.delete(c.id);
-      else if(G.moonSel.size<3)G.moonSel.add(c.id); e.classList.toggle("sel"); }; p.appendChild(e); });
+  m.innerHTML="<h2>🌙 Moon — release, then renew</h2><p>Select up to 3 cards to discard, then draw the same number.</p><div class='picks' id='mp'></div><button class='primary' onclick='moonConfirm()'>Cycle Selected</button>";
+  G.moonSel=new Set();
+  G.player.hand.forEach(c=>{const e=cardEl(c,{mini:true});e.style.cursor="pointer";
+    e.onclick=()=>{if(G.moonSel.has(c.id)){G.moonSel.delete(c.id);e.classList.remove("sel");}
+      else if(G.moonSel.size<3){G.moonSel.add(c.id);e.classList.add("sel");}}; // highlight only tracks what's really selected (cap 3)
+    m.querySelector("#mp").appendChild(e);});
   showOverlay();
 }
-function moonConfirm(){
-  const ids=[...G.moonSel]; ids.forEach(id=>{ const c=G.player.hand.find(x=>x.id===id);
-    G.player.hand=G.player.hand.filter(x=>x.id!==id); G.discard.push(c); });
-  for(let i=0;i<ids.length;i++){ if(!G.draw.length)reshuffle(); if(G.draw.length)G.player.hand.push(G.draw.pop()); }
-  logMsg("🌙 You cycled "+ids.length+" card(s).");
-  hideOverlay(); render();
-  document.getElementById("hint").textContent="Moon resolved. Discard one card to end your turn."; updateControls();
+function moonConfirm(){const ids=[...G.moonSel];
+  ids.forEach(id=>{const c=G.player.hand.find(x=>x.id===id);if(c){removeFromHand(G.player,[c]);G.discard.push(c);}});
+  for(let i=0;i<ids.length;i++){const x=eventDeckDraw();if(x)G.player.hand.push(x);}
+  logMsg("🌙 You released "+ids.length+" and drew anew.");hideOverlay();render();
+  const n=G.eventNext;G.eventNext=null;if(n)n();
 }
-function sunModal(reveal, isCounter){
+function fogPlayerModal(fogCard){
+  const cands=[];
+  [...G.player.sets,...G.ai.sets].forEach(s=>{if(s.locked)return;s.cards.forEach(c=>{if(c.special==="Mountain"&&!c.fog)cands.push({m:c,mine:G.player.sets.includes(s)});});});
+  // Laying the Fog on a Mountain IS your discard for the turn — the card rests on the Mountain (not the pile), and the turn ends. No second discard.
+  const done=(txt)=>{if(fogCard)G.draw.unshift(fogCard); // spent Fog buries to the bottom of the deck; it is never placed on the discard pile
+    logMsg(txt+" Laying the Fog was your discard — turn over.");hideOverlay();if(checkWin())return;render();endTurn();};
+  if(!cands.length){done("🌫️ You played Fog, but there was no Mountain to freeze. It drifts away.");return;}
+  if(cands.length===1){cands[0].m.fog=true;done("🌫️ You fogged a Mountain in "+(cands[0].mine?"your":"the opponent's")+" set — frozen (no steal, no cap) until Wind clears it.");return;}
   const m=document.getElementById("modal");
-  m.innerHTML="<h2>☀️ Sun — Choose one to keep</h2><div class='picks' id='sunPicks'></div>";
-  const p=m.querySelector("#sunPicks");
-  reveal.forEach(c=>{ const e=cardEl(c,{}); e.style.cursor="pointer";
-    e.onclick=()=>{ G.player.hand.push(c); reveal.filter(x=>x.id!==c.id).forEach(x=>G.discard.push(x));
-      logMsg("☀️ You kept the "+cardName(c)+" from the Sun.");
-      hideOverlay();
-      if(isCounter){ // was opponent's sun during their turn — resume AI turn end
-        render(); setTimeout(aiFinishAfterSun,400);
-      } else { if(checkWin())return; render();
-        document.getElementById("hint").textContent="Sun resolved. Discard one card to end your turn."; updateControls(); }
-    };
-    p.appendChild(e); });
+  m.innerHTML="<h2>🌫️ Fog — choose a Mountain to freeze</h2><p style='max-width:380px;margin:8px auto;font-size:13px;'>Freezing protects it from theft — but that set can't be capped until Wind clears the fog.</p><div class='picks' id='fp'></div>";
+  cands.forEach(cd=>{const e=cardEl(cd.m,{});e.style.cursor="pointer";e.title=cd.mine?"your set":"opponent's set";
+    e.onclick=()=>{cd.m.fog=true;done("🌫️ You fogged a Mountain in "+(cd.mine?"your":"the opponent's")+" set — frozen until Wind clears it.");};
+    m.querySelector("#fp").appendChild(e);});
   showOverlay();
 }
-function showOverlay(){ document.getElementById("overlay").style.display="flex"; }
-function hideOverlay(){ document.getElementById("overlay").style.display="none"; }
+function showOverlay(){document.getElementById("overlay").style.display="flex";}
+function hideOverlay(){document.getElementById("overlay").style.display="none";}
 
 /* ---------- TURN FLOW ---------- */
-function endTurn(){
-  if(checkWin())return;
-  render();
-  if(G.turn==="player"){ G.turn="ai"; G.drewThisTurn=false; render();
-    setTimeout(aiTurn, 700); }
-  else { G.turn="player"; G.drewThisTurn=false; logMsg("— Your turn —"); render(); }
-}
-function checkWin(){
-  const p=G.player.sets.filter(s=>s.locked).length, a=G.ai.sets.filter(s=>s.locked).length;
-  if(p>=TARGET||a>=TARGET){ G.over=true;
-    const m=document.getElementById("modal");
-    m.innerHTML="<h2>"+(p>=TARGET?"🌿 You found Harmony.":"The opponent found Harmony first.")+"</h2>"
-      +"<p>Final: You "+p+" · Opponent "+a+"</p><button class='primary' onclick='hideOverlay();newGame()'>Play Again</button>";
-    showOverlay(); render(); return true; }
-  return false;
-}
+function endTurn(){if(checkWin())return;render();
+  if(G.turn==="player"){G.turn="ai";G.drewThisTurn=false;render();setTimeout(aiTurn,700);}
+  else{G.turn="player";G.drewThisTurn=false;logMsg("— Your turn —");render();}}
+function checkWin(){const p=G.player.sets.filter(s=>s.locked).length,a=G.ai.sets.filter(s=>s.locked).length;
+  if(p>=TARGET||a>=TARGET){G.over=true;const m=document.getElementById("modal");
+    m.innerHTML="<h2>"+(p>=TARGET?"🌿 You found Harmony.":"The opponent found Harmony first.")+"</h2><p>Final: You "+p+" · Opponent "+a+"</p><button class='primary' onclick='hideOverlay();newGame()'>Play Again</button>";
+    showOverlay();render();return true;}return false;}
 
 /* ---------- SIMPLE AI ---------- */
-function aiTurn(){
-  if(G.over) return;
-  // 1. Draw: take discard if it helps, else deck
+function aiTurn(){if(G.over)return;
   const top=G.discard[G.discard.length-1];
-  if(top && aiWants(top)){ G.ai.hand.push(G.discard.pop()); logMsg("Opponent took the "+cardName(top)+" from the discard."); }
-  else { if(!G.draw.length)reshuffle(); if(G.draw.length){ G.ai.hand.push(G.draw.pop()); logMsg("Opponent drew from the deck."); } }
-  render();
-  setTimeout(aiPlay, 600);
+  if(top&&aiWants(top)){G.ai.hand.push(G.discard.pop());logMsg("Opponent took the "+cardName(top)+" from the discard.");}
+  else{const c=popDeck();if(c){
+    if(c.special==="Sun"){return aiSunDraw(c);} // AI's accelerated draw — keep best of three, then play on and discard
+    if(isImmediate(c)){logMsg("The opponent drew the "+c.special+"…");G.eventQueue.push(c);
+      render();return flushEvents(()=>{render();if(checkWin())return;endTurn();});}
+    G.ai.hand.push(c);logMsg("Opponent drew from the deck.");}}
+  render();setTimeout(aiPlay,600);
 }
-function aiPlay(){
-  if(G.over) return;
-  // A. Cap a completed set if AI holds all 4 seasons
-  const capTarget=G.ai.sets.find(s=>!s.locked && !setFogged(s));
-  if(capTarget){
-    // Fill each season with a real card if held, else a celestial wild.
-    const wilds=G.ai.hand.filter(c=>c.kind==="season"&&c.wild);
-    let wi=0; const used=[]; let canCap=true;
-    for(const s of SEASONS){
-      const real=G.ai.hand.find(c=>c.kind==="season"&&!c.wild&&c.season===s&&!used.includes(c));
-      if(real) used.push(real);
-      else if(wi<wilds.length) used.push(wilds[wi++]);
-      else { canCap=false; break; }
-    }
-    if(canCap && used.length===4){
-      capTarget.seasonCards=used; capTarget.locked=true;
-      used.forEach(c=>G.ai.hand=G.ai.hand.filter(x=>x.id!==c.id));
-      logMsg("🔒 Opponent capped a set with all four seasons.");
-      if(checkWin())return;
-      return aiDiscard();
-    }
-  }
-  // B. Lay down a set if possible
-  const found=aiFindSet();
-  if(found){
-    found.forEach(c=>G.ai.hand=G.ai.hand.filter(x=>x.id!==c.id));
-    G.ai.sets.push({cards:found,seasonCards:[],locked:false});
-    logMsg("Opponent laid down a set: "+evaluateSet(found).label+".");
-    drawUpTo(G.ai); render();
-    return endTurn(); // laying set = discard
-  }
-  // C. Occasionally play a Storm/Sun if hand is weak, or Wind if there is fog to clear that helps AI... keep simple: play Storm if hand clogged with seasons only
-  const storm=G.ai.hand.find(c=>c.special==="Storm");
-  const junk=G.ai.hand.filter(c=>c.kind==="terrain").length<=1;
-  if(storm && junk){ G.ai.hand=G.ai.hand.filter(c=>c.id!==storm.id); return resolveSpecial(storm,"ai"),aiDiscard(); }
-  const wind=G.ai.hand.find(c=>c.special==="Wind");
-  const myFog=G.ai.sets.some(setFogged);
-  if(wind && myFog){ G.ai.hand=G.ai.hand.filter(c=>c.id!==wind.id); resolveSpecial(wind,"ai"); return aiDiscard(); }
+function aiPlay(){if(G.over)return;
+  for(const s of G.player.sets){if(s.locked)continue;const m=s.cards.find(c=>c.special==="Mountain"&&!c.fog);
+    if(m){const need=G.ai.hand.find(tc=>tc.kind==="terrain"&&mountainNeeds(s,tc));
+      if(need){s.cards[s.cards.indexOf(m)]=need;removeFromHand(G.ai,[need]);m.fog=false;G.ai.hand.push(m);
+        logMsg("⛰️ Opponent stole your Mountain, completing your set with their own card!");break;}}}
+  const capTarget=G.ai.sets.find(s=>!s.locked&&!setFogged(s));
+  const sh={};SEASONS.forEach(s=>sh[s]=G.ai.hand.filter(c=>c.season===s));
+  const haveSeasons=SEASONS.every(s=>sh[s].length>0);
+  if(capTarget&&haveSeasons){const used=SEASONS.map(s=>sh[s][0]);capTarget.seasonCards=used;capTarget.locked=true;
+    used.forEach(c=>removeFromHand(G.ai,[c]));logMsg("🔒 Opponent capped a set with the four seasons.");if(checkWin())return;
+    drawUpTo(G.ai);return flushEvents(()=>{render();endTurn();});}
+  const found=findSetIn(G.ai.hand);
+  if(found&&canAddSet(G.ai,found).ok){found.forEach(c=>removeFromHand(G.ai,[c]));const set={cards:found,seasonCards:[],locked:false};
+    if(G.ai.reserve){set.seasonCards=G.ai.reserve;set.locked=true;G.ai.reserve=null;logMsg("🔒 Opponent laid a set and its season reserve locked it.");}
+    else logMsg("Opponent laid down a set: "+evaluateSet(found).label+".");
+    G.ai.sets.push(set);drawUpTo(G.ai);return flushEvents(()=>{render();endTurn();});}
+  if(haveSeasons&&!capTarget&&!G.ai.reserve&&G.ai.sets.length<4){const used=SEASONS.map(s=>sh[s][0]);used.forEach(c=>removeFromHand(G.ai,[c]));
+    G.ai.reserve=used;logMsg("🍂 Opponent laid a season set as a reserve.");drawUpTo(G.ai);return flushEvents(()=>{render();endTurn();});}
+  // Reclaim its OWN Mountain: complete one of its own sets with a real terrain card, take the wild back to reuse
+  for(const s of G.ai.sets){if(s.locked)continue;const m=s.cards.find(c=>c.special==="Mountain"&&!c.fog);
+    if(m){const need=G.ai.hand.find(tc=>tc.kind==="terrain"&&mountainNeeds(s,tc));
+      if(need){s.cards[s.cards.indexOf(m)]=need;removeFromHand(G.ai,[need]);m.fog=false;G.ai.hand.push(m);
+        logMsg("⛰️ Opponent completed its own set with a real card and reclaimed its Mountain.");return aiDiscard();}}}
+  const wind=G.ai.hand.find(c=>c.special==="Wind");if(wind&&G.ai.sets.some(setFogged)){removeFromHand(G.ai,[wind]);resolveSpecial(wind,"ai");if(checkWin())return;return endTurn();} // playing Wind IS the discard — end at seven
   return aiDiscard();
 }
-function aiFinishAfterSun(){ if(G.turn==="ai") aiDiscard(); }
-function aiDiscard(){
-  if(G.over) return;
-  // discard worst card
-  const worst=aiWorst(G.ai.hand,1)[0]||G.ai.hand[0];
-  G.ai.hand=G.ai.hand.filter(c=>c.id!==worst.id); G.discard.push(worst);
-  logMsg("Opponent discarded.");
-  endTurn();
-}
-// heuristic helpers
-function aiWants(c){ // does the drawn card plausibly help?
-  if(c.kind==="terrain"){ // helps if it moves toward a set
-    return true;
-  }
-  if(c.kind==="season" && c.wild) return true;
-  if(c.kind==="season") return G.ai.hand.filter(x=>x.kind==="season" && !x.wild && x.season===c.season).length<1;
-  if(c.special==="Mountain") return true;
-  return false;
-}
-function aiBest(cards){ // pick most useful from a list
-  return cards.slice().sort((a,b)=>aiValue(b)-aiValue(a))[0];
-}
-function aiWorst(hand,n){ return hand.slice().sort((a,b)=>aiValue(a)-aiValue(b)).slice(0,n); }
-function aiValue(c){
-  if(c.special==="Mountain")return 9;
-  if(c.kind==="season" && c.wild)return 8; // celestial wild — fills any season for a cap
-  if(c.kind==="terrain")return 6;
-  if(c.kind==="season"){ // value seasons you don't already have duplicates of
-    const dup=G.ai.hand.filter(x=>x.kind==="season" && !x.wild && x.season===c.season).length; return dup>1?2:4; }
-  if(c.special==="Storm")return 1;
-  return 3;
-}
-function aiFindSet(){
-  const pool=G.ai.hand.filter(c=>c.kind==="terrain"||c.special==="Mountain");
-  const terr=pool.filter(c=>c.kind==="terrain"); const mts=pool.filter(c=>c.special==="Mountain");
-  // direction-based
-  for(const dir of DIRECTIONS){
-    const inDir=terr.filter(c=>c.direction===dir);
-    const byTer={}; inDir.forEach(c=>byTer[c.terrain]=byTer[c.terrain]||c);
-    const distinct=Object.values(byTer); const missing=4-distinct.length;
-    if(distinct.length>=1 && missing<=mts.length && distinct.length+Math.min(missing,mts.length)===4 && missing>=0 && distinct.length+mts.length>=4 && distinct.length===new Set(distinct.map(c=>c.terrain)).size && missing>=0 && missing<=mts.length){
-      if(distinct.length+missing===4) return [...distinct,...mts.slice(0,missing)];
-    }
-  }
-  // terrain-based
-  for(const ter of TERRAINS){
-    const inTer=terr.filter(c=>c.terrain===ter);
-    const byDir={}; inTer.forEach(c=>byDir[c.direction]=byDir[c.direction]||c);
-    const distinct=Object.values(byDir); const missing=4-distinct.length;
-    if(distinct.length>=1 && missing>=0 && missing<=mts.length && distinct.length+missing===4)
-      return [...distinct,...mts.slice(0,missing)];
-  }
-  return null;
-}
+function aiDiscard(){if(G.over)return;
+  if(!G.ai.hand.length){return endTurn();} // nothing to discard (played its last card) — just end
+  const worst=aiWorst(G.ai.hand,1)[0]||G.ai.hand[0];removeFromHand(G.ai,[worst]);G.discard.push(worst);logMsg("Opponent discarded.");endTurn();}
+function aiMoonCycle(){const toss=aiWorst(G.ai.hand,3).filter(c=>aiValue(c)<=4);
+  toss.forEach(x=>{removeFromHand(G.ai,[x]);G.discard.push(x);});
+  const n=toss.length;for(let i=0;i<n;i++){const x=eventDeckDraw();if(x)G.ai.hand.push(x);} // eventDeckDraw keeps sky cards out of hand
+  logMsg("🌙 Opponent released "+n+" and drew "+n+".");}
+function aiWants(c){if(c.kind==="terrain")return true;if(c.kind==="season")return G.ai.hand.filter(x=>x.season===c.season).length<1;if(c.special==="Mountain")return true;return false;}
+function aiBest(cards){return cards.slice().sort((a,b)=>aiValue(b)-aiValue(a))[0];}
+function aiWorst(hand,n){return hand.slice().sort((a,b)=>aiValue(a)-aiValue(b)).slice(0,n);}
+function aiValue(c){if(c.special==="Mountain")return 9;if(c.kind==="terrain")return 6;
+  if(c.kind==="season"){const dup=G.ai.hand.filter(x=>x.season===c.season).length;return dup>1?2:4;}
+  if(c.special==="Storm")return 1;return 3;}
 
-function titleScreen(){
-  const m=document.getElementById("modal");
+function titleScreen(){const m=document.getElementById("modal");
   m.innerHTML="<h2 style='font-size:36px;letter-spacing:5px;margin:0;'>HARMONY</h2>"
-    +"<p style='font-style:italic;margin:2px 0 0;color:#6a5c3a;'>The Way Within</p>"
-    +"<p style='max-width:380px;margin:16px auto;font-size:14px;line-height:1.55;'>A meditative game of nature, balance, and change. Complete four Harmony Sets — each capped with all four seasons — before your opponent finds the way. Draw, build, and move with the change.</p>"
+    +"<p style='font-style:italic;margin:2px 0 0;color:#6a5c3a;'>A Game of Balance</p>"
+    +"<p style='max-width:400px;margin:16px auto;font-size:14px;line-height:1.55;'>A meditative game of nature, balance, and change. Complete four Harmony Sets — each a full direction or a full terrain — and cap each with the four seasons before your opponent finds the way.</p>"
     +"<button class='primary' onclick='hideOverlay();newGame();'>Start Game</button>";
-  showOverlay();
-}
+  showOverlay();}
 titleScreen();
 </script>
 </body>
