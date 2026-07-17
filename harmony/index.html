@@ -146,6 +146,8 @@ const TERRAINICON= {Forest:"🌳",Field:"🌾",River:"🌊",Road:"🛤️"};
 const SEASONICON = {Spring:"🌸",Summer:"🍃",Autumn:"🍁",Winter:"❄️"};
 const SEASONCOLOR= {Spring:"#c46b8b",Summer:"#4f8c4a",Autumn:"#c1662f",Winter:"#5a7fa5"};
 const SPECIAL    = {Mountain:"⛰️",Fog:"🌫️",Wind:"🍃",Storm:"⚡",Sun:"☀️",Moon:"🌙"};
+// Four celestial wild cards — each stands in for ANY season when capping a set.
+const CELESTIALS = ["Spring Equinox","Summer Solstice","Fall Equinox","Winter Solstice"];
 const SPECIALDESC = {
   Mountain:"Wild — substitutes for any terrain.",
   Fog:"Freeze an opponent's Mountain set (blocks capping/stealing).",
@@ -169,8 +171,9 @@ function buildDeck(){
   for(let i=0;i<4;i++) d.push(card({kind:"special",special:"Fog"}));
   for(let i=0;i<4;i++) d.push(card({kind:"special",special:"Wind"}));
   d.push(card({kind:"special",special:"Storm"}));
-  for(let i=0;i<2;i++) d.push(card({kind:"special",special:"Sun"}));
-  for(let i=0;i<2;i++) d.push(card({kind:"special",special:"Moon"}));
+  d.push(card({kind:"special",special:"Sun"}));
+  d.push(card({kind:"special",special:"Moon"}));
+  for(const c of CELESTIALS) d.push(card({kind:"season",season:"*",wild:true,celestial:c}));
   return d;
 }
 
@@ -222,6 +225,15 @@ function evaluateSet(cards){
   return {ok:false};
 }
 
+// A valid seasonal cap: 4 season cards (real or celestial-wild) that cover all four
+// seasons. Real seasons must be distinct; celestial wilds fill any missing season.
+function validSeasonCap(cards){
+  if(cards.length!==4) return false;
+  if(!cards.every(c=>c.kind==="season")) return false;
+  const reals=cards.filter(c=>!c.wild);
+  return new Set(reals.map(c=>c.season)).size===reals.length;
+}
+
 /* ---------- RENDER ---------- */
 function cardEl(c,{mini=false,playable=false,faceDown=false}={}){
   const d=document.createElement("div");
@@ -230,7 +242,10 @@ function cardEl(c,{mini=false,playable=false,faceDown=false}={}){
   let color="var(--neutral)", icon="❔", name="", foot="";
   if(c.kind==="terrain"){ color=DIRCOLOR[c.direction]; icon=TERRAINICON[c.terrain];
     name=c.terrain; foot=c.direction; }
-  else if(c.kind==="season"){ color=SEASONCOLOR[c.season]; icon=SEASONICON[c.season]; name=c.season; foot="Season"; }
+  else if(c.kind==="season"){
+    if(c.wild){ color="var(--gold)"; icon="✦"; name=c.celestial; foot="Celestial Wild"; }
+    else { color=SEASONCOLOR[c.season]; icon=SEASONICON[c.season]; name=c.season; foot="Season"; }
+  }
   else { color="var(--neutral)"; icon=SPECIAL[c.special]; name=c.special; foot="Special"; }
   if(USE_ART && c.kind==="terrain"){
     d.style.backgroundImage=`url(${ART_BASE}${c.direction}_${c.terrain}.jpg)`;
@@ -295,9 +310,8 @@ function updateControls(){
   // Lay set: exactly 4 terrain/mountain selected forming a valid set
   const laySet = sel.length===4 && sel.every(c=>c.kind==="terrain"||c.special==="Mountain") && evaluateSet(sel).ok;
   document.getElementById("btnLay").disabled = !(my && G.drewThisTurn && laySet);
-  // Cap: exactly 4 season cards (one of each) selected AND you have a completed uncapped set
-  const seas=sel.filter(c=>c.kind==="season");
-  const fourSeasons = sel.length===4 && seas.length===4 && new Set(seas.map(c=>c.season)).size===4;
+  // Cap: 4 season cards covering all four seasons (celestial wilds fill gaps) AND a completed uncapped set
+  const fourSeasons = validSeasonCap(sel);
   const hasCappable = G.player.sets.some(s=>!s.locked && !setFogged(s));
   document.getElementById("btnCap").disabled = !(my && G.drewThisTurn && fourSeasons && hasCappable);
   // Special: exactly 1 special selected
@@ -325,7 +339,7 @@ function drawFrom(pile){
   G.drewThisTurn=true; render();
 }
 function cardName(c){ if(c.kind==="terrain")return c.direction+" "+c.terrain;
-  if(c.kind==="season")return c.season; return c.special; }
+  if(c.kind==="season")return c.wild?c.celestial:c.season; return c.special; }
 
 function layDownSet(){
   const sel=selCards(); if(sel.length!==4||!evaluateSet(sel).ok) return;
@@ -338,11 +352,11 @@ function layDownSet(){
   endTurn();  // laying a set counts as the discard
 }
 function capWithSeasons(){
-  const sel=selCards(); const seas=sel.filter(c=>c.kind==="season");
-  if(seas.length!==4) return;
+  const sel=selCards();
+  if(!validSeasonCap(sel)) return;
   const target=G.player.sets.find(s=>!s.locked && !setFogged(s));
   if(!target){ alert("You need a completed, un-fogged set to cap."); return; }
-  target.seasonCards=seas; target.locked=true;
+  target.seasonCards=sel; target.locked=true;
   G.player.hand=G.player.hand.filter(c=>!G.sel.has(c.id));
   logMsg("🔒 You capped a set with all four seasons — it is permanently yours!");
   G.sel.clear();
@@ -476,15 +490,23 @@ function aiPlay(){
   if(G.over) return;
   // A. Cap a completed set if AI holds all 4 seasons
   const capTarget=G.ai.sets.find(s=>!s.locked && !setFogged(s));
-  const seasonsInHand={}; SEASONS.forEach(s=>seasonsInHand[s]=G.ai.hand.filter(c=>c.season===s));
-  const canCap = capTarget && SEASONS.every(s=>seasonsInHand[s].length>0);
-  if(canCap){
-    const used=SEASONS.map(s=>seasonsInHand[s][0]);
-    capTarget.seasonCards=used; capTarget.locked=true;
-    used.forEach(c=>G.ai.hand=G.ai.hand.filter(x=>x.id!==c.id));
-    logMsg("🔒 Opponent capped a set with all four seasons.");
-    if(checkWin())return;
-    return aiDiscard();
+  if(capTarget){
+    // Fill each season with a real card if held, else a celestial wild.
+    const wilds=G.ai.hand.filter(c=>c.kind==="season"&&c.wild);
+    let wi=0; const used=[]; let canCap=true;
+    for(const s of SEASONS){
+      const real=G.ai.hand.find(c=>c.kind==="season"&&!c.wild&&c.season===s&&!used.includes(c));
+      if(real) used.push(real);
+      else if(wi<wilds.length) used.push(wilds[wi++]);
+      else { canCap=false; break; }
+    }
+    if(canCap && used.length===4){
+      capTarget.seasonCards=used; capTarget.locked=true;
+      used.forEach(c=>G.ai.hand=G.ai.hand.filter(x=>x.id!==c.id));
+      logMsg("🔒 Opponent capped a set with all four seasons.");
+      if(checkWin())return;
+      return aiDiscard();
+    }
   }
   // B. Lay down a set if possible
   const found=aiFindSet();
@@ -518,7 +540,8 @@ function aiWants(c){ // does the drawn card plausibly help?
   if(c.kind==="terrain"){ // helps if it moves toward a set
     return true;
   }
-  if(c.kind==="season") return G.ai.hand.filter(x=>x.season===c.season).length<1;
+  if(c.kind==="season" && c.wild) return true;
+  if(c.kind==="season") return G.ai.hand.filter(x=>x.kind==="season" && !x.wild && x.season===c.season).length<1;
   if(c.special==="Mountain") return true;
   return false;
 }
@@ -528,9 +551,10 @@ function aiBest(cards){ // pick most useful from a list
 function aiWorst(hand,n){ return hand.slice().sort((a,b)=>aiValue(a)-aiValue(b)).slice(0,n); }
 function aiValue(c){
   if(c.special==="Mountain")return 9;
+  if(c.kind==="season" && c.wild)return 8; // celestial wild — fills any season for a cap
   if(c.kind==="terrain")return 6;
   if(c.kind==="season"){ // value seasons you don't already have duplicates of
-    const dup=G.ai.hand.filter(x=>x.season===c.season).length; return dup>1?2:4; }
+    const dup=G.ai.hand.filter(x=>x.kind==="season" && !x.wild && x.season===c.season).length; return dup>1?2:4; }
   if(c.special==="Storm")return 1;
   return 3;
 }
