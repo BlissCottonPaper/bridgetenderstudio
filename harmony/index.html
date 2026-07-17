@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony — The Way Within</title>
+<style>
+  :root{
+    --parchment:#e9e0cc; --ink:#3a3428; --north:#3b6ea5; --east:#c1662f;
+    --south:#d4a017; --west:#6b4e8c; --neutral:#7d7566; --gold:#b8912f;
+    --felt:#2f3a30;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:Georgia,'Times New Roman',serif;background:var(--felt);
+    color:#f2ecdc;min-height:100vh;}
+  header{padding:10px 18px;background:linear-gradient(#20281f,#2f3a30);
+    border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  header h1{margin:0;font-size:22px;letter-spacing:2px;color:var(--parchment);}
+  header .tag{font-style:italic;color:#b9b09a;font-size:13px;}
+  header .score{margin-left:auto;font-size:15px;color:var(--parchment);}
+  header .score b{color:var(--gold);}
+  #log{background:#1c231c;border-top:1px solid #3d4a3d;font-size:12.5px;
+    max-height:78px;overflow-y:auto;padding:6px 18px;color:#c9c2ae;}
+  #log div{padding:1px 0;}
+  .board{padding:12px 18px 120px;}
+  .zone{margin-bottom:14px;}
+  .zone h2{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;
+    color:#a89f88;margin:0 0 6px;border-bottom:1px solid #46523f;padding-bottom:3px;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-start;}
+  .set{border:1px dashed #5a6650;border-radius:8px;padding:6px;background:#28312a;}
+  .set.locked{border:2px solid var(--gold);background:#33301f;}
+  .set .setlabel{font-size:11px;color:#9aa88e;margin-bottom:4px;}
+  .set.locked .setlabel{color:var(--gold);}
+  .set .cards{display:flex;gap:4px;flex-wrap:wrap;}
+  .card{width:78px;height:112px;border-radius:7px;background:#d8cdb4;color:#2a2418;
+    position:relative;overflow:hidden;box-shadow:0 2px 5px rgba(0,0,0,.4);
+    cursor:default;flex:0 0 auto;border:1px solid #00000030;user-select:none;
+    transition:transform .1s;}
+  .card.mini{width:54px;height:78px;}
+  .card.sel{outline:3px solid var(--gold);transform:translateY(-8px);}
+  .card.playable{cursor:pointer;}
+  .card.playable:hover{transform:translateY(-6px);}
+  .card .top{height:22px;display:flex;align-items:center;justify-content:center;
+    font-size:10px;font-weight:bold;color:#fff;text-shadow:0 1px 1px #0006;letter-spacing:.5px;}
+  .card.mini .top{height:16px;font-size:8px;}
+  .card .body{position:absolute;top:22px;bottom:16px;left:0;right:0;
+    display:flex;align-items:center;justify-content:center;flex-direction:column;
+    text-align:center;padding:2px;}
+  .card.mini .body{top:16px;bottom:11px;}
+  .card .icon{font-size:26px;line-height:1;}
+  .card.mini .icon{font-size:16px;}
+  .card .name{font-size:10px;margin-top:3px;font-weight:bold;}
+  .card.mini .name{font-size:7px;margin-top:1px;}
+  .card .foot{position:absolute;bottom:0;left:0;right:0;height:16px;
+    font-size:8px;text-align:center;color:#fff;background:#0003;}
+  .card.mini .foot{height:11px;font-size:6px;line-height:11px;}
+  .card.back{background:var(--parchment);}
+  .card.back .enso{position:absolute;inset:0;display:flex;align-items:center;
+    justify-content:center;font-size:34px;color:#5a4e33;}
+  .card.fogged::after{content:'FOG';position:absolute;inset:0;background:#c9d3dd99;
+    display:flex;align-items:center;justify-content:center;font-weight:bold;
+    color:#33475a;font-size:14px;letter-spacing:2px;}
+  .pile{width:78px;height:112px;border-radius:7px;border:2px dashed #5a6650;
+    display:flex;align-items:center;justify-content:center;text-align:center;
+    font-size:11px;color:#9aa88e;cursor:pointer;background:#28312a;}
+  .pile:hover{border-color:var(--gold);color:var(--gold);}
+  #controls{position:fixed;bottom:0;left:0;right:0;background:linear-gradient(#20281f,#2f3a30);
+    border-top:2px solid var(--gold);padding:8px 18px;display:flex;gap:8px;
+    align-items:center;flex-wrap:wrap;}
+  button{font-family:inherit;font-size:13px;padding:7px 12px;border-radius:6px;
+    border:1px solid var(--gold);background:#3a3120;color:var(--parchment);cursor:pointer;}
+  button:hover:not(:disabled){background:#4a3f26;}
+  button:disabled{opacity:.4;cursor:not-allowed;}
+  button.primary{background:var(--gold);color:#241d0c;font-weight:bold;}
+  #hint{font-style:italic;color:#cfc7b0;font-size:13px;margin-left:6px;}
+  .piles{display:flex;gap:10px;align-items:flex-start;}
+  .pilewrap{text-align:center;font-size:11px;color:#9aa88e;}
+  #overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;
+    justify-content:center;z-index:50;}
+  #overlay .modal{background:var(--parchment);color:var(--ink);border-radius:12px;
+    padding:24px 28px;max-width:520px;text-align:center;box-shadow:0 8px 30px #000;}
+  #overlay .modal h2{margin-top:0;color:#5a4a22;}
+  #overlay .modal .picks{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:14px 0;}
+  .badge{display:inline-block;font-size:10px;padding:1px 6px;border-radius:9px;
+    background:#00000030;margin-left:6px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>HARMONY</h1><span class="tag">The Way Within</span>
+  <span class="score">You <b id="pScore">0</b> / <span id="target">4</span> &nbsp;·&nbsp;
+    Opponent <b id="aScore">0</b> / <span id="target2">4</span></span>
+</header>
+<div id="log"></div>
+
+<div class="board">
+  <div class="zone"><h2>Opponent</h2>
+    <div class="row" id="aHand"></div>
+    <div class="row" id="aSets" style="margin-top:8px;"></div>
+  </div>
+
+  <div class="zone"><h2>Table</h2>
+    <div class="piles">
+      <div class="pilewrap"><div class="pile" id="drawPile" onclick="drawFrom('draw')"></div>Draw</div>
+      <div class="pilewrap"><div class="pile" id="discardPile" onclick="drawFrom('discard')"></div>Discard</div>
+    </div>
+  </div>
+
+  <div class="zone"><h2>Your Sets</h2>
+    <div class="row" id="pSets"></div>
+  </div>
+
+  <div class="zone"><h2>Your Hand <span id="handCount" class="badge"></span></h2>
+    <div class="row" id="pHand"></div>
+  </div>
+</div>
+
+<div id="controls">
+  <button id="btnLay" class="primary" onclick="layDownSet()" disabled>Lay Down Set</button>
+  <button id="btnCap" onclick="capWithSeasons()" disabled>Cap with Seasons</button>
+  <button id="btnSpecial" onclick="playSpecial()" disabled>Play Special</button>
+  <button id="btnDiscard" onclick="discardSelected()" disabled>Discard &amp; End Turn</button>
+  <button onclick="clearSel()">Clear Selection</button>
+  <button onclick="newGame()">New Game</button>
+  <span id="hint"></span>
+</div>
+
+<div id="overlay"><div class="modal" id="modal"></div></div>
+
+<script>
+/* ============================================================
+   HARMONY — playable prototype (single player vs. a simple AI)
+   Built from the July 2026 working-draft rules.
+   Card art: drop images named e.g. North_River.jpg into /art/
+   and set ART_BASE below; placeholders show until then.
+   ============================================================ */
+
+const ART_BASE = "art/";           // where card images will live
+const USE_ART  = false;            // flip true once art is in /art/
+
+const TERRAINS   = ["Forest","Field","River","Road"];
+const DIRECTIONS = ["North","East","South","West"];
+const SEASONS    = ["Spring","Summer","Autumn","Winter"];
+const DIRCOLOR   = {North:"var(--north)",East:"var(--east)",South:"var(--south)",West:"var(--west)"};
+const TERRAINICON= {Forest:"🌳",Field:"🌾",River:"🌊",Road:"🛤️"};
+const SEASONICON = {Spring:"🌸",Summer:"🍃",Autumn:"🍁",Winter:"❄️"};
+const SEASONCOLOR= {Spring:"#c46b8b",Summer:"#4f8c4a",Autumn:"#c1662f",Winter:"#5a7fa5"};
+const SPECIAL    = {Mountain:"⛰️",Fog:"🌫️",Wind:"🍃",Storm:"⚡",Sun:"☀️",Moon:"🌙"};
+const SPECIALDESC = {
+  Mountain:"Wild — substitutes for any terrain.",
+  Fog:"Freeze an opponent's Mountain set (blocks capping/stealing).",
+  Wind:"Clear one Fog.",
+  Storm:"Everyone discards their hand and draws 7.",
+  Sun:"Reveal 4; each player keeps one.",
+  Moon:"Discard up to 3 and draw the same number."
+};
+
+const TARGET = 4;                  // 2-player target: 4 locked sets
+
+let uid = 0;
+function card(props){ return Object.assign({id:++uid, seasons:[], fog:false}, props); }
+
+function buildDeck(){
+  const d=[];
+  for(const t of TERRAINS) for(const dir of DIRECTIONS) for(let i=0;i<3;i++)
+    d.push(card({kind:"terrain",terrain:t,direction:dir}));
+  for(const s of SEASONS) for(let i=0;i<10;i++) d.push(card({kind:"season",season:s}));
+  for(let i=0;i<6;i++) d.push(card({kind:"special",special:"Mountain"}));
+  for(let i=0;i<4;i++) d.push(card({kind:"special",special:"Fog"}));
+  for(let i=0;i<4;i++) d.push(card({kind:"special",special:"Wind"}));
+  d.push(card({kind:"special",special:"Storm"}));
+  for(let i=0;i<2;i++) d.push(card({kind:"special",special:"Sun"}));
+  for(let i=0;i<2;i++) d.push(card({kind:"special",special:"Moon"}));
+  return d;
+}
+
+// deterministic-ish shuffle (no Math.random restriction here — this file runs standalone)
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+
+let G;   // game state
+function newGame(){
+  const deck = shuffle(buildDeck());
+  G = {
+    draw: deck, discard: [],
+    player:{hand:[], sets:[]}, ai:{hand:[], sets:[]},
+    turn:"player", drewThisTurn:false, sel:new Set(), over:false, msg:[]
+  };
+  for(let i=0;i<7;i++){ G.player.hand.push(G.draw.pop()); G.ai.hand.push(G.draw.pop()); }
+  G.discard.push(G.draw.pop());
+  logMsg("A new game begins. Draw a card to start your turn.");
+  render();
+}
+
+function logMsg(m){ G.msg.unshift(m); if(G.msg.length>40)G.msg.pop();
+  const el=document.getElementById("log"); el.innerHTML=G.msg.map(x=>"<div>"+x+"</div>").join(""); }
+
+/* ---------- SET LOGIC ---------- */
+// Given 4 terrain/mountain cards, is it a valid Harmony set? returns {ok,label}
+function evaluateSet(cards){
+  if(cards.length!==4) return {ok:false};
+  const reals = cards.filter(c=>c.kind==="terrain");
+  const wilds = cards.filter(c=>c.special==="Mountain").length;
+  if(reals.length+wilds!==4) return {ok:false};
+  // direction-based: all same direction, all 4 terrains
+  const dirs=new Set(reals.map(c=>c.direction));
+  const ters=new Set(reals.map(c=>c.terrain));
+  // Try direction-based (same direction, 4 distinct terrains)
+  if(dirs.size<=1){
+    const needed = 4 - reals.length; // wilds fill missing terrains
+    if(ters.size===reals.length && reals.length+needed===4){
+      const dir=[...dirs][0]||"Wild";
+      return {ok:true,label:dir+" — all terrains",type:"direction"};
+    }
+  }
+  // Try terrain-based (same terrain, 4 distinct directions)
+  if(ters.size<=1){
+    if(dirs.size===reals.length){
+      const ter=[...ters][0]||"Wild";
+      return {ok:true,label:ter+" — all directions",type:"terrain"};
+    }
+  }
+  return {ok:false};
+}
+
+/* ---------- RENDER ---------- */
+function cardEl(c,{mini=false,playable=false,faceDown=false}={}){
+  const d=document.createElement("div");
+  d.className="card"+(mini?" mini":"")+(playable?" playable":"")+(G.sel.has(c&&c.id)?" sel":"")+(c&&c.fog?" fogged":"");
+  if(faceDown){ d.classList.add("back"); d.innerHTML='<div class="enso">◯</div>'; return d; }
+  let color="var(--neutral)", icon="❔", name="", foot="";
+  if(c.kind==="terrain"){ color=DIRCOLOR[c.direction]; icon=TERRAINICON[c.terrain];
+    name=c.terrain; foot=c.direction; }
+  else if(c.kind==="season"){ color=SEASONCOLOR[c.season]; icon=SEASONICON[c.season]; name=c.season; foot="Season"; }
+  else { color="var(--neutral)"; icon=SPECIAL[c.special]; name=c.special; foot="Special"; }
+  if(USE_ART && c.kind==="terrain"){
+    d.style.backgroundImage=`url(${ART_BASE}${c.direction}_${c.terrain}.jpg)`;
+    d.style.backgroundSize="cover";
+  }
+  d.innerHTML=`<div class="top" style="background:${color}">${name}</div>
+    <div class="body"><div class="icon">${icon}</div><div class="name">${c.kind==='terrain'?c.direction:''}</div></div>
+    <div class="foot" style="background:${color}">${foot}</div>`;
+  if(playable) d.onclick=()=>toggleSel(c.id);
+  return d;
+}
+
+function setEl(set, owner){
+  const wrap=document.createElement("div");
+  wrap.className="set"+(set.locked?" locked":"");
+  const ev=evaluateSet(set.cards);
+  const scount=set.seasonCards.length;
+  wrap.innerHTML=`<div class="setlabel">${set.locked?"🔒 ":""}${ev.label||"set"} · seasons ${scount}/4</div>`;
+  const cc=document.createElement("div"); cc.className="cards";
+  set.cards.forEach(c=>cc.appendChild(cardEl(c,{mini:true})));
+  set.seasonCards.forEach(c=>cc.appendChild(cardEl(c,{mini:true})));
+  wrap.appendChild(cc);
+  return wrap;
+}
+
+function render(){
+  document.getElementById("pScore").textContent=G.player.sets.filter(s=>s.locked).length;
+  document.getElementById("aScore").textContent=G.ai.sets.filter(s=>s.locked).length;
+  document.getElementById("target").textContent=TARGET;
+  document.getElementById("target2").textContent=TARGET;
+  document.getElementById("handCount").textContent=G.player.hand.length+" cards";
+
+  const aHand=document.getElementById("aHand"); aHand.innerHTML="";
+  G.ai.hand.forEach(()=>aHand.appendChild(cardEl(null,{mini:true,faceDown:true})));
+  const aSets=document.getElementById("aSets"); aSets.innerHTML="";
+  G.ai.sets.forEach(s=>aSets.appendChild(setEl(s,"ai")));
+
+  const draw=document.getElementById("drawPile");
+  draw.innerHTML=`<div>${G.draw.length}<br>draw</div>`;
+  const disc=document.getElementById("discardPile"); disc.innerHTML="";
+  if(G.discard.length){ disc.appendChild(cardEl(G.discard[G.discard.length-1],{})); }
+  else disc.textContent="empty";
+
+  const pSets=document.getElementById("pSets"); pSets.innerHTML="";
+  G.player.sets.forEach(s=>pSets.appendChild(setEl(s,"player")));
+
+  const pHand=document.getElementById("pHand"); pHand.innerHTML="";
+  const canClick = G.turn==="player" && G.drewThisTurn && !G.over;
+  G.player.hand.forEach(c=>pHand.appendChild(cardEl(c,{playable:canClick})));
+
+  updateControls();
+}
+
+/* ---------- SELECTION ---------- */
+function toggleSel(id){ if(G.sel.has(id))G.sel.delete(id); else G.sel.add(id); render(); }
+function clearSel(){ G.sel.clear(); render(); }
+function selCards(){ return G.player.hand.filter(c=>G.sel.has(c.id)); }
+
+function updateControls(){
+  const my = G.turn==="player" && !G.over;
+  const sel=selCards();
+  // Lay set: exactly 4 terrain/mountain selected forming a valid set
+  const laySet = sel.length===4 && sel.every(c=>c.kind==="terrain"||c.special==="Mountain") && evaluateSet(sel).ok;
+  document.getElementById("btnLay").disabled = !(my && G.drewThisTurn && laySet);
+  // Cap: exactly 4 season cards (one of each) selected AND you have a completed uncapped set
+  const seas=sel.filter(c=>c.kind==="season");
+  const fourSeasons = sel.length===4 && seas.length===4 && new Set(seas.map(c=>c.season)).size===4;
+  const hasCappable = G.player.sets.some(s=>!s.locked && !setFogged(s));
+  document.getElementById("btnCap").disabled = !(my && G.drewThisTurn && fourSeasons && hasCappable);
+  // Special: exactly 1 special selected
+  const oneSpecial = sel.length===1 && sel[0].kind==="special" && sel[0].special!=="Mountain";
+  document.getElementById("btnSpecial").disabled = !(my && G.drewThisTurn && oneSpecial);
+  // Discard: exactly 1 selected, after drawing
+  document.getElementById("btnDiscard").disabled = !(my && G.drewThisTurn && sel.length===1);
+
+  const hint=document.getElementById("hint");
+  if(G.over){ hint.textContent=""; }
+  else if(G.turn!=="player"){ hint.textContent="Opponent is thinking…"; }
+  else if(!G.drewThisTurn){ hint.textContent="Draw a card (click the draw or discard pile) to begin your turn."; }
+  else { hint.textContent="Select cards, then choose an action — or discard one card to end your turn."; }
+}
+
+function setFogged(s){ return s.cards.some(c=>c.fog); }
+
+/* ---------- PLAYER ACTIONS ---------- */
+function drawFrom(pile){
+  if(G.over||G.turn!=="player"||G.drewThisTurn) return;
+  if(pile==="draw"){ if(!G.draw.length) reshuffle(); if(!G.draw.length)return;
+    const c=G.draw.pop(); G.player.hand.push(c); logMsg("You drew from the deck."); }
+  else { if(!G.discard.length)return; const c=G.discard.pop(); G.player.hand.push(c);
+    logMsg("You took the "+cardName(c)+" from the discard."); }
+  G.drewThisTurn=true; render();
+}
+function cardName(c){ if(c.kind==="terrain")return c.direction+" "+c.terrain;
+  if(c.kind==="season")return c.season; return c.special; }
+
+function layDownSet(){
+  const sel=selCards(); if(sel.length!==4||!evaluateSet(sel).ok) return;
+  const ev=evaluateSet(sel);
+  G.player.hand=G.player.hand.filter(c=>!G.sel.has(c.id));
+  G.player.sets.push({cards:sel, seasonCards:[], locked:false});
+  logMsg("You laid down a set: "+ev.label+". (This was your discard for the turn.)");
+  G.sel.clear();
+  drawUpTo(G.player);
+  endTurn();  // laying a set counts as the discard
+}
+function capWithSeasons(){
+  const sel=selCards(); const seas=sel.filter(c=>c.kind==="season");
+  if(seas.length!==4) return;
+  const target=G.player.sets.find(s=>!s.locked && !setFogged(s));
+  if(!target){ alert("You need a completed, un-fogged set to cap."); return; }
+  target.seasonCards=seas; target.locked=true;
+  G.player.hand=G.player.hand.filter(c=>!G.sel.has(c.id));
+  logMsg("🔒 You capped a set with all four seasons — it is permanently yours!");
+  G.sel.clear();
+  if(checkWin()) return;
+  // capping is your play; still must discard to end
+  render(); updateControls();
+  document.getElementById("hint").textContent="Set locked! Now discard one card to end your turn.";
+}
+function playSpecial(){
+  const sel=selCards(); if(sel.length!==1) return; const c=sel[0];
+  G.player.hand=G.player.hand.filter(x=>x.id!==c.id); G.sel.clear();
+  resolveSpecial(c,"player");
+}
+function discardSelected(){
+  const sel=selCards(); if(sel.length!==1) return; const c=sel[0];
+  G.player.hand=G.player.hand.filter(x=>x.id!==c.id); G.discard.push(c);
+  logMsg("You discarded the "+cardName(c)+".");
+  G.sel.clear(); endTurn();
+}
+function drawUpTo(who){ while(who.hand.length<7){ if(!G.draw.length)reshuffle(); if(!G.draw.length)break; who.hand.push(G.draw.pop()); } }
+function reshuffle(){ if(!G.discard.length)return; const keep=G.discard.pop();
+  G.draw=shuffle(G.discard); G.discard=[keep]; logMsg("(The draw pile was refilled from the discards.)"); }
+
+/* ---------- SPECIALS ---------- */
+function resolveSpecial(c,owner){
+  const who = owner==="player"?"You":"The opponent";
+  if(c.special==="Storm"){
+    logMsg("⚡ "+who+" played STORM — everyone discards their hand and draws 7.");
+    G.discard.push(...G.player.hand,...G.ai.hand); G.player.hand=[]; G.ai.hand=[];
+    G.discard.push(c);
+    drawUpTo(G.player); drawUpTo(G.ai);
+  } else if(c.special==="Moon"){
+    G.discard.push(c);
+    if(owner==="player"){ moonModal(); return; }
+    else { // AI: cycle its worst up-to-3
+      const toss=aiWorst(G.ai.hand,3); toss.forEach(x=>{G.ai.hand=G.ai.hand.filter(h=>h.id!==x.id);G.discard.push(x);});
+      drawUpTo(G.ai); logMsg("🌙 Opponent cycled "+toss.length+" card(s) with the Moon.");
+    }
+  } else if(c.special==="Sun"){
+    G.discard.push(c);
+    const reveal=[]; for(let i=0;i<4;i++){ if(!G.draw.length)reshuffle(); if(G.draw.length)reveal.push(G.draw.pop()); }
+    if(owner==="player"){ sunModal(reveal); return; }
+    else { // AI picks best, player picks best of the rest
+      const aiPick=aiBest(reveal); if(aiPick){G.ai.hand.push(aiPick);reveal.splice(reveal.indexOf(aiPick),1);}
+      logMsg("☀️ Opponent played the Sun. Choose a card to keep.");
+      sunModal(reveal,true); return;
+    }
+  } else if(c.special==="Fog"){
+    // fog an opponent's unlocked mountain-set
+    const targetSet = (owner==="player"?G.ai:G.player).sets.find(s=>!s.locked && s.cards.some(x=>x.special==="Mountain"&&!x.fog));
+    if(targetSet){ const m=targetSet.cards.find(x=>x.special==="Mountain"&&!x.fog); m.fog=true;
+      logMsg("🌫️ "+who+" fogged a Mountain — that set is frozen until the fog clears."); }
+    else { logMsg("🌫️ "+who+" played Fog, but there was no Mountain to freeze. It drifts away."); }
+    G.discard.push(c);
+  } else if(c.special==="Wind"){
+    const anyFog = [...G.player.sets,...G.ai.sets].flatMap(s=>s.cards).find(x=>x.fog);
+    if(anyFog){ anyFog.fog=false; logMsg("🍃 "+who+" played Wind — the fog clears."); }
+    else logMsg("🍃 "+who+" played Wind, but there was no fog. A gentle breeze passes.");
+    G.discard.push(c);
+  }
+  if(owner==="player"){ if(checkWin())return; render();
+    document.getElementById("hint").textContent="Special resolved. Now discard one card to end your turn."; updateControls(); }
+}
+
+/* ---------- MODALS (player Moon / Sun) ---------- */
+function moonModal(){
+  const m=document.getElementById("modal");
+  m.innerHTML="<h2>🌙 Moon — Reflect &amp; Renew</h2><p>Select up to 3 cards to release, then draw the same number.</p><div class='picks' id='moonPicks'></div><button class='primary' onclick='moonConfirm()'>Cycle Selected</button>";
+  const p=m.querySelector("#moonPicks"); G.moonSel=new Set();
+  G.player.hand.forEach(c=>{ const e=cardEl(c,{mini:true,playable:false});
+    e.style.cursor="pointer"; e.onclick=()=>{ if(G.moonSel.has(c.id))G.moonSel.delete(c.id);
+      else if(G.moonSel.size<3)G.moonSel.add(c.id); e.classList.toggle("sel"); }; p.appendChild(e); });
+  showOverlay();
+}
+function moonConfirm(){
+  const ids=[...G.moonSel]; ids.forEach(id=>{ const c=G.player.hand.find(x=>x.id===id);
+    G.player.hand=G.player.hand.filter(x=>x.id!==id); G.discard.push(c); });
+  for(let i=0;i<ids.length;i++){ if(!G.draw.length)reshuffle(); if(G.draw.length)G.player.hand.push(G.draw.pop()); }
+  logMsg("🌙 You cycled "+ids.length+" card(s).");
+  hideOverlay(); render();
+  document.getElementById("hint").textContent="Moon resolved. Discard one card to end your turn."; updateControls();
+}
+function sunModal(reveal, isCounter){
+  const m=document.getElementById("modal");
+  m.innerHTML="<h2>☀️ Sun — Choose one to keep</h2><div class='picks' id='sunPicks'></div>";
+  const p=m.querySelector("#sunPicks");
+  reveal.forEach(c=>{ const e=cardEl(c,{}); e.style.cursor="pointer";
+    e.onclick=()=>{ G.player.hand.push(c); reveal.filter(x=>x.id!==c.id).forEach(x=>G.discard.push(x));
+      logMsg("☀️ You kept the "+cardName(c)+" from the Sun.");
+      hideOverlay();
+      if(isCounter){ // was opponent's sun during their turn — resume AI turn end
+        render(); setTimeout(aiFinishAfterSun,400);
+      } else { if(checkWin())return; render();
+        document.getElementById("hint").textContent="Sun resolved. Discard one card to end your turn."; updateControls(); }
+    };
+    p.appendChild(e); });
+  showOverlay();
+}
+function showOverlay(){ document.getElementById("overlay").style.display="flex"; }
+function hideOverlay(){ document.getElementById("overlay").style.display="none"; }
+
+/* ---------- TURN FLOW ---------- */
+function endTurn(){
+  if(checkWin())return;
+  render();
+  if(G.turn==="player"){ G.turn="ai"; G.drewThisTurn=false; render();
+    setTimeout(aiTurn, 700); }
+  else { G.turn="player"; G.drewThisTurn=false; logMsg("— Your turn —"); render(); }
+}
+function checkWin(){
+  const p=G.player.sets.filter(s=>s.locked).length, a=G.ai.sets.filter(s=>s.locked).length;
+  if(p>=TARGET||a>=TARGET){ G.over=true;
+    const m=document.getElementById("modal");
+    m.innerHTML="<h2>"+(p>=TARGET?"🌿 You found Harmony.":"The opponent found Harmony first.")+"</h2>"
+      +"<p>Final: You "+p+" · Opponent "+a+"</p><button class='primary' onclick='hideOverlay();newGame()'>Play Again</button>";
+    showOverlay(); render(); return true; }
+  return false;
+}
+
+/* ---------- SIMPLE AI ---------- */
+function aiTurn(){
+  if(G.over) return;
+  // 1. Draw: take discard if it helps, else deck
+  const top=G.discard[G.discard.length-1];
+  if(top && aiWants(top)){ G.ai.hand.push(G.discard.pop()); logMsg("Opponent took the "+cardName(top)+" from the discard."); }
+  else { if(!G.draw.length)reshuffle(); if(G.draw.length){ G.ai.hand.push(G.draw.pop()); logMsg("Opponent drew from the deck."); } }
+  render();
+  setTimeout(aiPlay, 600);
+}
+function aiPlay(){
+  if(G.over) return;
+  // A. Cap a completed set if AI holds all 4 seasons
+  const capTarget=G.ai.sets.find(s=>!s.locked && !setFogged(s));
+  const seasonsInHand={}; SEASONS.forEach(s=>seasonsInHand[s]=G.ai.hand.filter(c=>c.season===s));
+  const canCap = capTarget && SEASONS.every(s=>seasonsInHand[s].length>0);
+  if(canCap){
+    const used=SEASONS.map(s=>seasonsInHand[s][0]);
+    capTarget.seasonCards=used; capTarget.locked=true;
+    used.forEach(c=>G.ai.hand=G.ai.hand.filter(x=>x.id!==c.id));
+    logMsg("🔒 Opponent capped a set with all four seasons.");
+    if(checkWin())return;
+    return aiDiscard();
+  }
+  // B. Lay down a set if possible
+  const found=aiFindSet();
+  if(found){
+    found.forEach(c=>G.ai.hand=G.ai.hand.filter(x=>x.id!==c.id));
+    G.ai.sets.push({cards:found,seasonCards:[],locked:false});
+    logMsg("Opponent laid down a set: "+evaluateSet(found).label+".");
+    drawUpTo(G.ai); render();
+    return endTurn(); // laying set = discard
+  }
+  // C. Occasionally play a Storm/Sun if hand is weak, or Wind if there is fog to clear that helps AI... keep simple: play Storm if hand clogged with seasons only
+  const storm=G.ai.hand.find(c=>c.special==="Storm");
+  const junk=G.ai.hand.filter(c=>c.kind==="terrain").length<=1;
+  if(storm && junk){ G.ai.hand=G.ai.hand.filter(c=>c.id!==storm.id); return resolveSpecial(storm,"ai"),aiDiscard(); }
+  const wind=G.ai.hand.find(c=>c.special==="Wind");
+  const myFog=G.ai.sets.some(setFogged);
+  if(wind && myFog){ G.ai.hand=G.ai.hand.filter(c=>c.id!==wind.id); resolveSpecial(wind,"ai"); return aiDiscard(); }
+  return aiDiscard();
+}
+function aiFinishAfterSun(){ if(G.turn==="ai") aiDiscard(); }
+function aiDiscard(){
+  if(G.over) return;
+  // discard worst card
+  const worst=aiWorst(G.ai.hand,1)[0]||G.ai.hand[0];
+  G.ai.hand=G.ai.hand.filter(c=>c.id!==worst.id); G.discard.push(worst);
+  logMsg("Opponent discarded.");
+  endTurn();
+}
+// heuristic helpers
+function aiWants(c){ // does the drawn card plausibly help?
+  if(c.kind==="terrain"){ // helps if it moves toward a set
+    return true;
+  }
+  if(c.kind==="season") return G.ai.hand.filter(x=>x.season===c.season).length<1;
+  if(c.special==="Mountain") return true;
+  return false;
+}
+function aiBest(cards){ // pick most useful from a list
+  return cards.slice().sort((a,b)=>aiValue(b)-aiValue(a))[0];
+}
+function aiWorst(hand,n){ return hand.slice().sort((a,b)=>aiValue(a)-aiValue(b)).slice(0,n); }
+function aiValue(c){
+  if(c.special==="Mountain")return 9;
+  if(c.kind==="terrain")return 6;
+  if(c.kind==="season"){ // value seasons you don't already have duplicates of
+    const dup=G.ai.hand.filter(x=>x.season===c.season).length; return dup>1?2:4; }
+  if(c.special==="Storm")return 1;
+  return 3;
+}
+function aiFindSet(){
+  const pool=G.ai.hand.filter(c=>c.kind==="terrain"||c.special==="Mountain");
+  const terr=pool.filter(c=>c.kind==="terrain"); const mts=pool.filter(c=>c.special==="Mountain");
+  // direction-based
+  for(const dir of DIRECTIONS){
+    const inDir=terr.filter(c=>c.direction===dir);
+    const byTer={}; inDir.forEach(c=>byTer[c.terrain]=byTer[c.terrain]||c);
+    const distinct=Object.values(byTer); const missing=4-distinct.length;
+    if(distinct.length>=1 && missing<=mts.length && distinct.length+Math.min(missing,mts.length)===4 && missing>=0 && distinct.length+mts.length>=4 && distinct.length===new Set(distinct.map(c=>c.terrain)).size && missing>=0 && missing<=mts.length){
+      if(distinct.length+missing===4) return [...distinct,...mts.slice(0,missing)];
+    }
+  }
+  // terrain-based
+  for(const ter of TERRAINS){
+    const inTer=terr.filter(c=>c.terrain===ter);
+    const byDir={}; inTer.forEach(c=>byDir[c.direction]=byDir[c.direction]||c);
+    const distinct=Object.values(byDir); const missing=4-distinct.length;
+    if(distinct.length>=1 && missing>=0 && missing<=mts.length && distinct.length+missing===4)
+      return [...distinct,...mts.slice(0,missing)];
+  }
+  return null;
+}
+
+function titleScreen(){
+  const m=document.getElementById("modal");
+  m.innerHTML="<h2 style='font-size:36px;letter-spacing:5px;margin:0;'>HARMONY</h2>"
+    +"<p style='font-style:italic;margin:2px 0 0;color:#6a5c3a;'>The Way Within</p>"
+    +"<p style='max-width:380px;margin:16px auto;font-size:14px;line-height:1.55;'>A meditative game of nature, balance, and change. Complete four Harmony Sets — each capped with all four seasons — before your opponent finds the way. Draw, build, and move with the change.</p>"
+    +"<button class='primary' onclick='hideOverlay();newGame();'>Start Game</button>";
+  showOverlay();
+}
+titleScreen();
+</script>
+</body>
+</html>

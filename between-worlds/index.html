@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Between Worlds — BridgeTender Studio</title>
+  <meta name="description" content="Between Worlds — a project taking shape at BridgeTender Studio. Info coming soon." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --void:#0a0806; --stone:#2c2218; --parchment:#c8b89a; --amber:#e8a030; --ember:#f5c870; --mist:#7a6e62; }
+    body {
+      background: var(--void); color: var(--parchment);
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      min-height: 100svh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center; padding: 2rem;
+      -webkit-font-smoothing: antialiased;
+    }
+    .eyebrow { font-family:'Cinzel',serif; font-size:0.62rem; letter-spacing:0.4em;
+      text-transform:uppercase; color:var(--amber); margin-bottom:1.4rem; }
+    h1 { font-family:'Cinzel',serif; font-size:clamp(2rem,6vw,3.4rem); font-weight:600;
+      color:var(--ember); letter-spacing:0.05em; line-height:1.1;
+      text-shadow:0 0 60px rgba(232,160,48,0.35); margin-bottom:1.2rem; }
+    .rule { width:min(320px,70vw); height:1px;
+      background:linear-gradient(to right,transparent,var(--amber),transparent);
+      box-shadow:0 0 14px 1px rgba(232,160,48,0.22); margin:0.4rem 0 1.6rem; }
+    .coming { font-family:'IM Fell English',Georgia,serif; font-style:italic;
+      font-size:clamp(1.05rem,2.6vw,1.4rem); opacity:0.9; margin-bottom:0.7rem; }
+    p.sub { opacity:0.62; max-width:32rem; line-height:1.75; margin-bottom:2.4rem; font-size:1.02rem; }
+    a.back { font-family:'Cinzel',serif; font-size:0.6rem; letter-spacing:0.3em;
+      text-transform:uppercase; color:var(--amber); text-decoration:none; opacity:0.8; transition:opacity .2s; }
+    a.back:hover { opacity:1; }
+    :focus-visible { outline:2px solid var(--amber); outline-offset:3px; }
+  </style>
+</head>
+<body>
+  <p class="eyebrow">BridgeTender Studio</p>
+  <h1>Between Worlds</h1>
+  <div class="rule"></div>
+  <p class="coming">Info coming soon.</p>
+  <p class="sub">Miniature worlds you can hold — living moss, hidden light, and a paragraph of myth with every piece.</p>
+  <a class="back" href="/">&larr; Back to the studio</a>
+</body>
+</html>
