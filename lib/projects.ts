@@ -75,4 +75,4 @@ export const PROJECTS: Record<string, Project> = {
 export const FEATURED_SLUGS = ['harmony', 'soulcraft', 'bliss'] as const;
 
 // /our-work full roster (added to over time).
-export const OUR_WORK_SLUGS = ['harmony', 'wyldroot', 'soulcraft', 'bliss'] as const;
+export const OUR_WORK_SLUGS = ['bliss', 'soulcraft', 'harmony', 'wyldroot'] as const;
