@@ -260,7 +260,7 @@
       background: var(--shadow);
     }
     .card-image.logo { object-position: center; } /* centered logo art crops evenly, not top-anchored */
-    .card-image.cover-art { aspect-ratio: 483 / 311; object-fit: cover; object-position: center; } /* book-cover art shown whole at its native ratio */
+    .card-image.cover-art { object-fit: contain; object-position: center; background: #0c110d; } /* same 16:9 height as siblings; whole cover shown, dark edges blend */
 
     /* Branded cover panels for the two live sites — self-contained, no external
        screenshot dependency (a live-screenshot service captured error/blank frames). */
