@@ -2,15 +2,7 @@
  * One marker on the illuminated path — a lantern post standing over its step
  * name. Steps sit along a horizontal lantern rule (see the Process section).
  */
-export function ProcessStep({
-  label,
-  index,
-  total,
-}: {
-  label: string;
-  index: number;
-  total: number;
-}) {
+export function ProcessStep({ label }: { label: string }) {
   return (
     <li className="relative flex flex-1 flex-col items-center text-center">
       {/* Lantern post: a glowing bulb on a slender stem meeting the path. */}
@@ -20,9 +12,6 @@ export function ProcessStep({
       </span>
       <span className="font-display text-[0.68rem] uppercase tracking-[0.22em] text-amber sm:text-xs">
         {label}
-      </span>
-      <span className="mt-1 font-body text-xs text-parchment/45">
-        {index + 1} / {total}
       </span>
     </li>
   );

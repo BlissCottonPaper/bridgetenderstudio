@@ -57,3 +57,10 @@ export const HOME = {
     ],
   },
 };
+
+export const OUR_WORK = {
+  eyebrow: 'Our Work',
+  title: 'The worlds we tend',
+  intro:
+    'Games, instruments, and handmade things — each one an idea we helped carry across the bridge. More are always taking shape.',
+};

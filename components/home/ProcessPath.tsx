@@ -20,8 +20,8 @@ export function ProcessPath() {
             className="lantern-rule absolute left-4 right-4 top-[6px]"
           />
           <ol className="relative flex items-start justify-between gap-2">
-            {steps.map((label, i) => (
-              <ProcessStep key={label} label={label} index={i} total={steps.length} />
+            {steps.map((label) => (
+              <ProcessStep key={label} label={label} />
             ))}
           </ol>
         </div>

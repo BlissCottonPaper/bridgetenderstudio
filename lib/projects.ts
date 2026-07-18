@@ -58,7 +58,7 @@ export const PROJECTS: Record<string, Project> = {
   },
   wyldroot: {
     slug: 'wyldroot',
-    name: 'WyldRoot',
+    name: 'Wyldroot',
     tag: 'Tabletop Game',
     blurb:
       'Forage the ancient forest as the herbalist of Eldermere, gathering what heals in a wood that never maps the same way twice.',
@@ -67,7 +67,7 @@ export const PROJECTS: Record<string, Project> = {
     href: 'https://instagram.com/wyldrootgame',
     external: true,
     status: 'In Development',
-    cta: 'Follow WyldRoot',
+    cta: 'Follow Wyldroot',
   },
 };
 
