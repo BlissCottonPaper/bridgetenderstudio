@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>BridgeTender Studio</title>
-  <meta name="description" content="BridgeTender Studio — from the mind of Marc Simmons. Miniature worlds, living gifts, games, myth, and music at the threshold." />
+  <meta name="description" content="BridgeTender Studio — miniature worlds, living gifts, games, myth, and music at the threshold." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet" />
@@ -294,6 +294,38 @@
       padding: 0.22em 0.75em;
     }
 
+    /* Clickable project cards — each card is a door to its own page */
+    a.card { text-decoration: none; color: inherit; cursor: pointer; }
+    a.card:not(.card-featured) { display: block; }
+    .card-cta {
+      display: inline-block;
+      margin-top: 1.2rem;
+      margin-left: 0.85rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.52rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--amber);
+      opacity: 0.75;
+      transition: opacity 0.3s;
+    }
+    a.card:hover .card-cta { opacity: 1; }
+    a.game-tile {
+      text-decoration: none; color: inherit; display: block; cursor: pointer;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    a.game-tile:hover { border-color: rgba(232,160,48,0.5); background: rgba(44,34,24,0.72); }
+    .tile-cta {
+      display: block;
+      margin-top: 0.6rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.5rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--amber);
+      opacity: 0.85;
+    }
+
     /* Biome list inside Between Worlds */
     .biome-list {
       list-style: none;
@@ -408,7 +440,6 @@
   <header class="hero">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-content">
-      <p class="hero-eyebrow">From the mind of Marc Simmons</p>
       <h1>BridgeTender<br/>Studio</h1>
       <p class="hero-tagline">Light your threshold. Someone is waiting on the other side.</p>
       <a href="#manifesto" class="hero-scroll" aria-label="Enter the studio">
@@ -454,7 +485,7 @@
     <div class="projects-grid">
 
       <!-- BETWEEN WORLDS — featured full-width -->
-      <div class="card card-featured">
+      <a class="card card-featured" href="/between-worlds/">
         <div>
           <p class="card-tag">Project I · Flagship · Miniature Worlds</p>
           <h3>Between Worlds</h3>
@@ -478,6 +509,7 @@
             parchment map of all seven biomes.
           </p>
           <span class="card-status">Flagship · Launching with The Hollow</span>
+          <span class="card-cta">Enter →</span>
         </div>
         <div>
           <p class="section-eyebrow" style="margin-bottom:0.9rem;">The Seven Biomes</p>
@@ -495,10 +527,10 @@
             One world, perfected, before the next biome opens.
           </p>
         </div>
-      </div>
+      </a>
 
       <!-- ROOT AWAKENINGS -->
-      <div class="card">
+      <a class="card" href="/root-awakenings/">
         <p class="card-tag">Project II · Living Gifts</p>
         <h3>Root Awakenings</h3>
         <span class="card-sub">The irreverent sister brand</span>
@@ -513,9 +545,10 @@
           toward noticing the world is stranger than it looks.
         </p>
         <span class="card-status">In Development</span>
-      </div>
+        <span class="card-cta">Enter →</span>
+      </a>
 
-      <!-- CLOCKWORK GAMES -->
+      <!-- CLOCKWORK GAMES — its two games are the doors -->
       <div class="card">
         <p class="card-tag">Project III · Game Studio</p>
         <h3>Clockwork Games</h3>
@@ -526,23 +559,25 @@
           passion-scale, not profit-scale.
         </p>
         <div class="games-pair">
-          <div class="game-tile">
+          <a class="game-tile" href="/harmony/">
             <h4>Harmony</h4>
             <p>Rummy-style terrain and season card game. Sixteen terrain cards,
             four seasons, mountain wilds, fog blockers, four celestial wild cards.
             Near complete. Target: UK Games Expo.</p>
-          </div>
-          <div class="game-tile">
+            <span class="tile-cta">Play the teaser →</span>
+          </a>
+          <a class="game-tile" href="/wildroot/">
             <h4>Wildroot</h4>
             <p>You are the herbalist of Eldermere, foraging the ancient forest
             to cure ailments. Playtested in Europe. Beloved. Awaiting its moment.</p>
-          </div>
+            <span class="tile-cta">Coming soon →</span>
+          </a>
         </div>
-        <span class="card-status">Harmony: Near Complete &nbsp;·&nbsp; Wildroot: In Development</span>
+        <span class="card-status">Harmony: Playable Teaser &nbsp;·&nbsp; Wildroot: In Development</span>
       </div>
 
       <!-- THE BOOK -->
-      <div class="card">
+      <a class="card" href="/the-book/">
         <p class="card-tag">Project IV · Novel</p>
         <h3>The Book</h3>
         <span class="card-sub">Theo doesn't know what he is yet</span>
@@ -556,24 +591,30 @@
           customers find the book. One feeds the other indefinitely.
         </p>
         <span class="card-status">Early Chapters</span>
-      </div>
+        <span class="card-cta">Enter →</span>
+      </a>
 
-      <!-- ARCHETYPE DECK -->
-      <div class="card">
-        <p class="card-tag">Project V · Archetype System</p>
-        <h3>The Archetype Deck</h3>
-        <span class="card-sub">The card the other decks are missing</span>
+      <!-- THE ART OF SOULCRAFT — live product (formerly The Archetype Deck) -->
+      <a class="card" href="https://artofsoulcraft.com" target="_blank" rel="noopener">
+        <p class="card-tag">Project V · Living Archetype System</p>
+        <h3>The Art of Soulcraft</h3>
+        <span class="card-sub">You are not one of twelve types — you are all twelve.</span>
         <p>
-          The BridgeTender as a new archetype — the organizing card, the one who holds
-          space between all others. Myss, Pearson, and Campbell territory, mapped to
-          the liminal. Neither the Hermit nor the guide — the one who lights the
-          lantern and remains at the threshold.
+          A living mirror built on twelve archetypal voices. Not a personality test —
+          a map of which voices in you speak loudest, which stay quiet, and what happens
+          when one of them goes too long unheard.
         </p>
-        <span class="card-status">Concept Phase</span>
-      </div>
+        <p>
+          Campbell, Jung, Myss, and Pearson territory, made interactive: take the
+          assessment, meet your Mandala, and sit with the companion who reads it back
+          to you. The BridgeTender archetype, grown into its own world.
+        </p>
+        <span class="card-status">Live · artofsoulcraft.com</span>
+        <span class="card-cta">Visit the site →</span>
+      </a>
 
       <!-- WORLD TREE CHRONICLES -->
-      <div class="card">
+      <a class="card" href="/world-tree-chronicles/">
         <p class="card-tag">Project VI · Chronicles</p>
         <h3>World Tree Chronicles</h3>
         <span class="card-sub">The roots go deeper than any single world</span>
@@ -581,10 +622,11 @@
           A project taking shape. Details forthcoming.
         </p>
         <span class="card-status">Coming</span>
-      </div>
+        <span class="card-cta">Enter →</span>
+      </a>
 
       <!-- MUSIC -->
-      <div class="card">
+      <a class="card" href="/music/">
         <p class="card-tag">Project VII · Music</p>
         <h3>Music</h3>
         <span class="card-sub">Sound at the threshold</span>
@@ -592,7 +634,8 @@
           A project taking shape. Details forthcoming.
         </p>
         <span class="card-status">Coming</span>
-      </div>
+        <span class="card-cta">Enter →</span>
+      </a>
 
     </div>
   </section>
@@ -615,8 +658,8 @@
           That is his only work.
         </p>
         <p>
-          Marc Simmons was an educator for thirty years. Shepherding people across
-          thresholds is his life pattern. This studio is the same work,
+          Its founder was an educator for thirty years. Shepherding people across
+          thresholds is a lifelong pattern. This studio is the same work,
           dressed in different materials.
         </p>
         <p>
@@ -657,10 +700,9 @@
        FOOTER
   ═══════════════════════════════════════════════════ -->
   <footer>
-    <p class="footer-mark">From the mind of Marc Simmons</p>
     <p class="footer-sub">
       BridgeTender Studio &nbsp;·&nbsp;
-      <a href="mailto:marc@bridgetenderstudio.com">marc@bridgetenderstudio.com</a>
+      <a href="mailto:hello@bridgetenderstudio.com">hello@bridgetenderstudio.com</a>
       &nbsp;·&nbsp; bridgetenderstudio.com
     </p>
   </footer>
