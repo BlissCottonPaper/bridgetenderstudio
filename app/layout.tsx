@@ -1,0 +1,53 @@
+import type { Metadata } from 'next';
+
+// Self-hosted display, body, and myth-voice faces.
+import '@fontsource/cinzel/400.css';
+import '@fontsource/cinzel/500.css';
+import '@fontsource/cinzel/600.css';
+import '@fontsource/cinzel/700.css';
+import '@fontsource/cormorant-garamond/400.css';
+import '@fontsource/cormorant-garamond/400-italic.css';
+import '@fontsource/cormorant-garamond/500.css';
+import '@fontsource/cormorant-garamond/600.css';
+import '@fontsource/im-fell-english/400.css';
+import '@fontsource/im-fell-english/400-italic.css';
+
+import './globals.css';
+import { Nav } from '@/components/Nav';
+import { Footer } from '@/components/Footer';
+import { STUDIO_NAME } from '@/lib/constants';
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://bridgetenderstudio.com'),
+  title: {
+    default: `${STUDIO_NAME} — Where ideas cross into the world`,
+    template: `%s · ${STUDIO_NAME}`,
+  },
+  description:
+    'BridgeTender Studio is an independent creative studio helping meaningful ideas become reality.',
+  openGraph: {
+    title: STUDIO_NAME,
+    description:
+      'An independent creative studio helping meaningful ideas become reality.',
+    type: 'website',
+  },
+};
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        {/* Keyboard users can jump straight to content. */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-sm focus:bg-amber focus:px-4 focus:py-2 focus:font-display focus:text-sm focus:uppercase focus:tracking-widest focus:text-void"
+        >
+          Skip to content
+        </a>
+        <Nav />
+        <main id="main">{children}</main>
+        <Footer />
+      </body>
+    </html>
+  );
+}
