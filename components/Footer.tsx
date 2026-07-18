@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { NAV_ITEMS, MAKERS_MARK, CONTACT_EMAIL, STUDIO_NAME } from '@/lib/constants';
+import { NAV_ITEMS, CONTACT_EMAIL, STUDIO_NAME } from '@/lib/constants';
 import { LanternRule } from './LanternRule';
 
 /**
@@ -41,8 +41,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 flex flex-col gap-2 border-t border-stone/40 pt-6 text-parchment/55 sm:flex-row sm:items-center sm:justify-between">
-          <p className="font-myth text-base italic">{MAKERS_MARK}</p>
+        <div className="mt-12 border-t border-stone/40 pt-6 text-parchment/55">
           <p className="font-display text-[0.7rem] uppercase tracking-[0.2em]">
             © {new Date().getFullYear()} {STUDIO_NAME}
           </p>
