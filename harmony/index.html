@@ -551,73 +551,50 @@ function eventDeckDraw(){ // draw one for an event's own needs; immediates re-qu
   if(isImmediate(c)){G.eventQueue.push(c);return null;}
   return c;
 }
-/* ☀️ Sun = a sky event for EVERYONE, like Storm and Moon. Reveal three, keep the best,
-   discard the other two. For the DRAWER the kept card is simply an upgraded draw: you're
-   then holding eight and finish your turn as normal — discard one, OR lay a set if the kept
-   card completed one (laying is your discard, then you refill to seven). For the NON-drawer
-   (it isn't their turn) the kept card REPLACES one card of their choice, netting zero. The
-   Sun melts to the bottom of the deck. */
-function sunReveal(n){ // reveal n ordinary cards; sky cards among them slide to the deck bottom
+/* ☀️ Sun = a sky event for EVERYONE, like Storm and Moon (rulebook mechanic). Each player
+   REPLACES one card: draw one from the deck, then release one of their choice — so every hand
+   stays at seven. Drawing the Sun is that player's whole turn (no set is laid). The Sun melts
+   to the bottom of the deck. */
+function sunReveal(n){ // draw up to n ordinary cards from the deck; sky cards among them slide to the deck bottom
   const out=[],aside=[];let g=0;
   while(out.length<n&&g++<200){const c=popDeck();if(!c)break;if(isImmediate(c)){aside.push(c);continue;}out.push(c);}
   if(aside.length)G.draw.unshift(...aside);return out;
 }
-function sunReplaceAI(){ // opponent (not their turn): reveal three, keep best, discard the rest and its worst hand card
-  const d=sunReveal(3);if(!d.length)return;
-  const keep=aiBest(d);d.filter(x=>x!==keep).forEach(x=>G.discard.push(x));G.ai.hand.push(keep);
-  const w=aiWorst(G.ai.hand,1)[0];if(w){removeFromHand(G.ai,[w]);G.discard.push(w);}
+function sunDrawOne(who){const d=sunReveal(1);if(d.length)who.hand.push(d[0]);return d.length>0;} // draw one ordinary card into a hand
+function sunReplaceAIone(){ // opponent replaces one: draw one, release its worst — net seven
+  sunDrawOne(G.ai);const w=aiWorst(G.ai.hand,1)[0];if(w){removeFromHand(G.ai,[w]);G.discard.push(w);}
 }
-function sunKeepModalGeneric(pDrawn,onKept){ // pick one of three to keep (the other two are discarded); does NOT hide the overlay
+function sunReplacePlayerModal(onDone){ // you drew one (holding eight) — release one of your choice, back to seven
   const m=document.getElementById("modal");
-  m.innerHTML="<h2>☀️ Sun — keep one of three</h2><p style='max-width:450px;margin:8px auto;font-size:13px;'>The Sun shows you three cards. Keep the best; the other two are discarded.</p><div class='picks' id='sp'></div>";
-  pDrawn.forEach(cd=>{const e=cardEl(cd,{});e.style.cursor="pointer";e.onclick=()=>{
-    pDrawn.filter(x=>x.id!==cd.id).forEach(x=>G.discard.push(x));
-    G.player.hand.push(cd);logMsg("☀️ You kept the "+cardName(cd)+" from the sun.");
-    render();onKept(cd);};
-    m.querySelector("#sp").appendChild(e);});
-  showOverlay();
-}
-function sunReleaseModalGeneric(onDone){ // non-drawer replace: release one from hand to return to seven
-  const m=document.getElementById("modal");
-  m.innerHTML="<h2>☀️ Sun — replace which card?</h2><p style='max-width:450px;margin:8px auto;font-size:13px;'>The Sun caught you mid-round — release one card so the kept card replaces it and your hand stays at seven.</p><div class='picks' id='sp' style='flex-wrap:wrap;'></div>";
+  m.innerHTML="<h2>☀️ Sun — replace a card</h2><p style='max-width:450px;margin:8px auto;font-size:13px;'>The Sun shines on all. You drew one card — release one of your choice so your hand returns to seven.</p><div class='picks' id='sp' style='flex-wrap:wrap;'></div>";
   G.player.hand.forEach(cd=>{const e=cardEl(cd,{mini:true});e.style.cursor="pointer";e.onclick=()=>{
     removeFromHand(G.player,[cd]);G.discard.push(cd);logMsg("☀️ You released the "+cardName(cd)+".");
     hideOverlay();render();onDone();};
     m.querySelector("#sp").appendChild(e);});
   showOverlay();
 }
-function sunPlayerContinue(){ // drawer is now holding eight — finish the turn normally (lay a set, or discard one)
-  if(checkWin())return;render();
-  document.getElementById("hint").textContent="☀️ Sun kept — you're holding eight. Lay a set (if the kept card completed one) or discard one card to end your turn.";
-  updateControls();
+/* Resolve one Sun for both players (opponent auto-replaces; you replace via the modal), then run `after`. */
+function sunResolve(after){
+  sunReplaceAIone();
+  const drew=sunDrawOne(G.player);
+  logMsg("☀️ The Sun rises for all — each player replaces one card.");
+  render();
+  if(drew)sunReplacePlayerModal(after);else after();
 }
-// The player draws the Sun on their turn: opponent replaces, you keep the best of three, then finish your turn.
+// You draw the Sun on your turn — both replace one, then your turn ends (drawing the Sun is your whole turn).
 function playerSunDraw(sun){
   G.drewThisTurn=true;G.draw.unshift(sun); // Sun melts to the deck bottom
-  sunReplaceAI();
-  const pDrawn=sunReveal(3);
-  logMsg("☀️ The Sun rises for all — keep the best of three, then finish your turn.");
-  if(!pDrawn.length){if(checkWin())return;render();return endTurn();} // deck spent: nothing to keep, turn ends at seven
-  sunKeepModalGeneric(pDrawn,()=>{hideOverlay();sunPlayerContinue();});
+  sunResolve(()=>{if(checkWin())return;endTurn();});
 }
-// The AI draws the Sun on its turn: AI keeps the best of three (now eight) and finishes via aiPlay; you (not your turn) replace one.
+// The AI draws the Sun on its turn — both replace one, then its turn ends (no build).
 function aiSunDraw(sun){
-  G.draw.unshift(sun);
-  const aiDrawn=sunReveal(3);
-  if(aiDrawn.length){const keep=aiBest(aiDrawn);aiDrawn.filter(x=>x!==keep).forEach(x=>G.discard.push(x));G.ai.hand.push(keep);}
-  logMsg("☀️ The Sun rises for all — the opponent keeps one; you replace one.");
-  const pDrawn=sunReveal(3);render();
-  if(!pDrawn.length){return setTimeout(aiPlay,400);} // you get nothing to replace; AI finishes its turn
-  sunKeepModalGeneric(pDrawn,()=>sunReleaseModalGeneric(()=>setTimeout(aiPlay,300)));
+  G.draw.unshift(sun); // Sun melts to the deck bottom
+  sunResolve(()=>{if(checkWin())return;endTurn();});
 }
-// Queued Sun (surfacing during a Storm's redraw, or dealt at game start): pure replace for both, no set-lay.
+// Queued Sun (dealt at game start, or surfacing during a Storm's redraw): both replace one, then resume the chain.
 function sunEvent(c){
   G.eventSpent.push(c);
-  sunReplaceAI();
-  const pDrawn=sunReveal(3);
-  logMsg("☀️ The Sun rises for all — reveal three, keep one, replace a card in your hand.");
-  if(!pDrawn.length){const n=G.eventNext;G.eventNext=null;if(n)n();return;}
-  sunKeepModalGeneric(pDrawn,()=>sunReleaseModalGeneric(()=>{const n=G.eventNext;G.eventNext=null;if(n)n();}));
+  sunResolve(()=>{const n=G.eventNext;G.eventNext=null;if(n)n();});
 }
 function moonEvent(c){
   G.eventSpent.push(c);
