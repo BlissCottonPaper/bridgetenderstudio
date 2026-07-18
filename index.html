@@ -260,6 +260,7 @@
       background: var(--shadow);
     }
     .card-image.logo { object-position: center; } /* centered logo art crops evenly, not top-anchored */
+    .card-image.cover-art { aspect-ratio: 483 / 311; object-fit: cover; object-position: center; } /* book-cover art shown whole at its native ratio */
 
     /* Branded cover panels for the two live sites — self-contained, no external
        screenshot dependency (a live-screenshot service captured error/blank frames). */
@@ -545,8 +546,9 @@
         </div>
       </a>
 
-      <!-- World Tree Chronicles — standard, no image -->
+      <!-- World Tree Chronicles — standard -->
       <div class="card card-std">
+        <img class="card-image cover-art" src="world-tree-cover.png" alt="World Tree Chronicles, Book I: The Unseen Path" loading="lazy" />
         <div class="card-body">
           <p class="card-tag">Novel</p>
           <h3>World Tree Chronicles</h3>
