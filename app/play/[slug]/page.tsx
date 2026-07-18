@@ -26,6 +26,18 @@ export default function GameHomePage({ params }: { params: { slug: string } }) {
 
   return (
     <>
+      {/* Slim breadcrumb bar — kept off the artwork so the banner stays immersive. */}
+      <div className="border-b border-stone/60 bg-void/70">
+        <div className="mx-auto max-w-5xl px-5 py-3 sm:px-8">
+          <Link
+            href="/play"
+            className="font-display text-[0.72rem] uppercase tracking-[0.2em] text-parchment/70 transition-colors hover:text-ember"
+          >
+            ← All games
+          </Link>
+        </div>
+      </div>
+
       {/* Cinematic banner — the game's face. */}
       <section className="relative isolate flex min-h-[52vh] items-end overflow-hidden border-b border-stone">
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -43,13 +55,7 @@ export default function GameHomePage({ params }: { params: { slug: string } }) {
           }}
         />
         <div className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-8">
-          <Link
-            href="/play"
-            className="font-display text-[0.72rem] uppercase tracking-[0.2em] text-parchment/70 transition-colors hover:text-ember"
-          >
-            ← All games
-          </Link>
-          <div className="mt-4 flex flex-wrap items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             <p className="font-display text-xs uppercase tracking-[0.32em] text-amber">
               {game.tagline}
             </p>

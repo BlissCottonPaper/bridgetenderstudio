@@ -24,7 +24,12 @@ export const ROUTES = {
   theStudio: '/the-studio',
   signIn: '/sign-in',
   getStarted: '/lantern#beta',
+  privacy: '/privacy',
 } as const;
+
+// Where the Lantern beta signup posts. A Cloudflare Pages Function (see
+// /functions/api/lantern-signup.js) serves this alongside the static export.
+export const LANTERN_SIGNUP_ENDPOINT = '/api/lantern-signup';
 
 // Locked six-item primary navigation.
 export const NAV_ITEMS: { label: string; href: string; beta?: boolean }[] = [

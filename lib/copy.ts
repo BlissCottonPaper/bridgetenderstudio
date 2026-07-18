@@ -73,3 +73,45 @@ export const PLAY = {
   featuredLabel: 'Featured Game',
   upcomingLabel: 'More at the workbench',
 };
+
+export const LANTERN = {
+  eyebrow: 'The Platform',
+  name: PLATFORM_NAME,
+  subtitle: 'A digital makerspace for developing playable ideas.',
+  vision: [
+    'Sit down with an insightful collaborator. Describe what you want to make in plain language — and watch it become playable.',
+    'No code, no deployment, no databases to wrangle. That machinery stays behind the curtain. Lantern begins with tabletop games, and grows from there.',
+  ],
+  companion:
+    'A design companion stays with you the whole way — asking the right questions, and turning your answers into something you can hold and play.',
+  ageNote: 'Lantern is made for creators 13 and older.',
+  signup: {
+    heading: 'Join the Beta',
+    blurb:
+      "Leave your email and we'll light the way in. We'll only write when there's something real to share.",
+    nameLabel: 'What should we call you?',
+    namePlaceholder: 'Your name or handle (optional)',
+    emailLabel: 'Email address',
+    emailPlaceholder: 'you@example.com',
+    consent:
+      'By joining, you agree to receive occasional email about the Lantern beta. No spam, and you can leave the list anytime.',
+    submit: 'Join the Beta',
+    submitting: 'Lighting the way…',
+    privacyPrefix: 'We keep your address private — see our',
+    privacyLinkText: 'Privacy Policy',
+    // Warm, welcoming states — a duplicate is not a failure.
+    success: {
+      title: "You're on the list.",
+      body: "Watch your inbox — we'll send word when the next doors open.",
+    },
+    duplicate: {
+      title: "You're already with us.",
+      body: "This email is already on the list — no need to sign up twice. We'll be in touch.",
+    },
+    error: {
+      title: 'Something went dim.',
+      body: "We couldn't add you just now. Please try again in a moment.",
+    },
+    invalidEmail: 'That email address doesn’t look quite right.',
+  },
+};
