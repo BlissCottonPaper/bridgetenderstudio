@@ -227,7 +227,7 @@
       grid-template-columns: repeat(6, 1fr);
       gap: 1.2rem;
       margin-top: 3rem;
-      align-items: start;
+      align-items: stretch;   /* cards in a row match height so their feet align */
     }
     .card-wide { grid-column: span 3; }   /* Bliss, Soulcraft — top row, half width each */
     .card-std  { grid-column: span 2; }   /* Wyldroot, Harmony, Chronicles — three across below */
@@ -282,11 +282,11 @@
 
     .card .card-tag {
       font-family: 'Cinzel', serif;
-      font-size: 0.56rem;
-      letter-spacing: 0.38em;
+      font-size: 0.7rem;
+      letter-spacing: 0.32em;
       text-transform: uppercase;
       color: var(--amber);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.55rem;
     }
     .card h3 {
       font-family: 'Cinzel', serif;
@@ -337,23 +337,25 @@
     }
     .card-link {
       font-family: 'Cinzel', serif;
-      font-size: 0.58rem;
-      letter-spacing: 0.2em;
+      font-size: 0.66rem;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--amber);
       text-decoration: none;
-      opacity: 0.85;
+      opacity: 0.9;
       transition: opacity 0.2s;
     }
     .card-link:hover { opacity: 1; }
     .card-status {
       font-family: 'Cinzel', serif;
-      font-size: 0.52rem;
-      letter-spacing: 0.3em;
+      font-size: 0.62rem;
+      letter-spacing: 0.16em;
       text-transform: uppercase;
-      color: var(--mist);
-      border: 1px solid var(--stone);
-      padding: 0.22em 0.75em;
+      color: var(--parchment);
+      background: rgba(232,160,48,0.06);
+      border: 1px solid rgba(200,184,154,0.42);
+      border-radius: 3px;
+      padding: 0.32em 0.82em;
       white-space: nowrap;
     }
 
@@ -487,7 +489,7 @@
         <div class="card-body">
           <p class="card-tag">Reflection Instrument</p>
           <h3>The Art of Soulcraft</h3>
-          <span class="card-sub">A lens and mirror for the inner life.</span>
+          <span class="card-sub">Discover your archetypes.</span>
           <p class="card-reveal">A twelve-archetype reflection instrument for understanding the forces that shape how you see, protect, choose, and become.</p>
           <div class="card-foot"><span class="card-link">Enter Soulcraft ↗</span><span class="card-status">Live</span></div>
         </div>
