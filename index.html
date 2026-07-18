@@ -3,8 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>BridgeTender Studio</title>
-  <meta name="description" content="BridgeTender Studio — miniature worlds, living gifts, games, myth, and music at the threshold." />
+  <title>BridgeTender Studio | Games, Stories, Paper &amp; Imagined Worlds</title>
+  <meta name="description" content="BridgeTender Studio is the creative workshop behind Harmony, Wyldroot, The Art of Soulcraft, Bliss Cotton Paper, and other imagined worlds." />
+
+  <!-- Social preview (mirrors title/description) -->
+  <meta property="og:title" content="BridgeTender Studio | Games, Stories, Paper &amp; Imagined Worlds" />
+  <meta property="og:description" content="The creative workshop behind Harmony, Wyldroot, The Art of Soulcraft, Bliss Cotton Paper, and other imagined worlds." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://bridgetenderstudio.com/" />
+  <meta property="og:image" content="https://bridgetenderstudio.com/hero.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet" />
@@ -46,14 +55,7 @@
       overflow: hidden;
     }
 
-    /*
-    ┌──────────────────────────────────────────────────────────┐
-    │  HERO IMAGE                                              │
-    │  File must be named: hero.png                           │
-    │  Upload alongside index.html in GitHub repo root.       │
-    │  Rename from "BridgeTender Side View.jpg" → hero.png   │
-    └──────────────────────────────────────────────────────────┘
-    */
+    /* Hero image — file: hero.png, in the repo root, referenced below. */
     .hero-bg {
       position: absolute;
       inset: 0;
@@ -89,7 +91,7 @@
     .hero-eyebrow {
       font-family: 'Cinzel', serif;
       font-size: 0.68rem;
-      letter-spacing: 0.38em;
+      letter-spacing: 0.34em;
       text-transform: uppercase;
       color: var(--amber);
       margin-bottom: 1.1rem;
@@ -112,27 +114,23 @@
       font-size: clamp(1.05rem, 2.4vw, 1.35rem);
       color: var(--parchment);
       opacity: 0.88;
-      margin-bottom: 2.8rem;
+      margin-bottom: 2.6rem;
     }
 
-    .hero-scroll {
-      display: inline-flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.45rem;
-      color: var(--mist);
+    .hero-cta {
+      display: inline-block;
       font-family: 'Cinzel', serif;
-      font-size: 0.58rem;
+      font-size: 0.72rem;
       letter-spacing: 0.28em;
       text-transform: uppercase;
+      color: var(--ember);
       text-decoration: none;
-      opacity: 0.55;
-      transition: opacity 0.3s;
+      border: 1px solid var(--amber);
+      padding: 0.85rem 2rem;
+      border-radius: 2px;
+      transition: background 0.25s, color 0.25s;
     }
-    .hero-scroll:hover { opacity: 1; }
-    .hero-scroll svg { animation: bob 3s ease-in-out infinite; }
-    @keyframes bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
-    @media (prefers-reduced-motion: reduce) { .hero-scroll svg { animation: none; } }
+    .hero-cta:hover { background: var(--amber); color: var(--void); }
 
     /* ── LANTERN RULE — the page's signature element ───────────── */
     .lantern-rule {
@@ -146,38 +144,43 @@
       box-shadow: 0 0 14px 1px rgba(232,160,48,0.22);
     }
 
-    /* ── MANIFESTO ─────────────────────────────────────────────── */
-    .manifesto {
-      text-align: center;
-      padding: 7rem 2rem 6rem;
-      max-width: 760px;
+    /* ── INTRO ─────────────────────────────────────────────────── */
+    .intro {
+      max-width: 680px;
       margin: 0 auto;
+      padding: 7rem 2rem 6.5rem;
+      text-align: center;
     }
-    .manifesto-eyebrow {
-      font-family: 'Cinzel', serif;
-      font-size: 0.62rem;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      color: var(--amber);
-      margin-bottom: 2rem;
-    }
-    .manifesto blockquote {
+    .intro-lead {
       font-family: 'IM Fell English', Georgia, serif;
       font-style: italic;
-      font-size: clamp(1.2rem, 2.8vw, 1.72rem);
-      color: var(--parchment);
-      line-height: 1.72;
-      margin-bottom: 2.2rem;
-      opacity: 0.93;
+      font-size: clamp(1.3rem, 3vw, 1.85rem);
+      color: var(--ember);
+      opacity: 0.95;
+      line-height: 1.5;
+      margin-bottom: 1.8rem;
     }
-    .manifesto-sub {
-      font-size: 1rem;
+    .intro p { font-size: 1.08rem; opacity: 0.85; margin-bottom: 1rem; }
+    .intro .accent {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
       color: var(--parchment);
-      opacity: 0.68;
-      line-height: 1.8;
-      max-width: 560px;
-      margin: 0 auto;
+      opacity: 0.95;
+      font-size: 1.18rem;
     }
+    .intro-link {
+      display: inline-block;
+      margin-top: 2.2rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.26em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-decoration: none;
+      opacity: 0.9;
+      transition: opacity 0.2s;
+    }
+    .intro-link:hover { opacity: 1; }
 
     /* ── SECTION WRAPPER ───────────────────────────────────────── */
     .section-wrap {
@@ -210,40 +213,39 @@
       font-style: italic;
       font-size: 1.18rem;
       color: var(--parchment);
-      opacity: 0.92;
+      opacity: 0.9;
       margin-bottom: 1.5rem;
     }
 
     p { color: var(--parchment); margin-bottom: 1.1rem; font-size: 1rem; opacity: 0.82; }
     p:last-child { margin-bottom: 0; }
 
-    /* ── PROJECT GRID ──────────────────────────────────────────── */
+    /* ── PROJECT GRID — five visual portal tiles ──────────────── */
+    .section-wrap.gallery { max-width: 1160px; }
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.4rem;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1rem;
       margin-top: 3rem;
     }
-
-    .card-featured {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 2.5rem;
-      align-items: start;
-    }
-    @media (max-width: 640px) {
-      .card-featured { grid-template-columns: 1fr; gap: 1.6rem; }
-    }
+    @media (max-width: 1100px) { .projects-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 760px)  { .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 520px)  { .projects-grid { grid-template-columns: 1fr; } }
 
     .card {
       background: var(--shadow);
       border: 1px solid var(--stone);
-      padding: 2rem 2rem 2.2rem;
+      padding: 1.6rem 1.4rem 1.5rem;
       position: relative;
       overflow: hidden;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      display: flex;
+      flex-direction: column;
+      min-height: 210px;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
     }
+    /* A portal tile is the whole card — clickable, lifting a touch on hover. */
+    a.card { text-decoration: none; color: inherit; cursor: pointer; }
+    a.card:hover { transform: translateY(-4px); }
     .card::before {
       content: '';
       position: absolute;
@@ -281,122 +283,85 @@
       opacity: 0.78;
       margin-bottom: 0.9rem;
     }
-    .card p { font-size: 0.91rem; line-height: 1.68; }
-    .card-status {
-      display: inline-block;
-      margin-top: 1.2rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.52rem;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--mist);
-      border: 1px solid var(--stone);
-      padding: 0.22em 0.75em;
+    .card p { font-size: 0.91rem; line-height: 1.68; opacity: 0.82; }
+    /* Portal tile: one short line under the title (lean, not text-heavy). */
+    .portal-line {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
+      font-size: 0.92rem;
+      color: var(--parchment);
+      opacity: 0.76;
+      line-height: 1.5;
+      margin-bottom: 0.9rem;
     }
+    a.card:hover .card-link { opacity: 1; color: var(--ember); }
 
-    /* Clickable project cards — each card is a door to its own page */
-    a.card { text-decoration: none; color: inherit; cursor: pointer; }
-    a.card:not(.card-featured) { display: block; }
-    .card-cta {
-      display: inline-block;
-      margin-top: 1.2rem;
-      margin-left: 0.85rem;
+    /* Bottom row of a card: an optional doorway link + the status badge */
+    .card-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.8rem 1.2rem;
+      margin-top: auto;
+      padding-top: 1.3rem;
+    }
+    .card-link {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--amber);
+      text-decoration: none;
+      opacity: 0.85;
+      transition: opacity 0.2s;
+    }
+    .card-link:hover { opacity: 1; }
+    .card-status {
       font-family: 'Cinzel', serif;
       font-size: 0.52rem;
       letter-spacing: 0.3em;
       text-transform: uppercase;
-      color: var(--amber);
-      opacity: 0.75;
-      transition: opacity 0.3s;
-    }
-    a.card:hover .card-cta { opacity: 1; }
-    a.game-tile {
-      text-decoration: none; color: inherit; display: block; cursor: pointer;
-      transition: border-color 0.3s, background 0.3s;
-    }
-    a.game-tile:hover { border-color: rgba(232,160,48,0.5); background: rgba(44,34,24,0.72); }
-    .tile-cta {
-      display: block;
-      margin-top: 0.6rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.5rem;
-      letter-spacing: 0.26em;
-      text-transform: uppercase;
-      color: var(--amber);
-      opacity: 0.85;
-    }
-
-    /* Biome list inside Between Worlds */
-    .biome-list {
-      list-style: none;
-      margin-top: 0.4rem;
-    }
-    .biome-list li {
-      padding: 0.48rem 0;
-      border-bottom: 1px solid var(--stone);
-      font-size: 0.88rem;
-      color: var(--parchment);
-      opacity: 0.82;
-      display: flex;
-      gap: 0.7rem;
-      align-items: baseline;
-    }
-    .biome-list li::before {
-      content: '◈';
-      color: var(--amber);
-      font-size: 0.46rem;
-      flex-shrink: 0;
-      position: relative; top: -2px;
-    }
-    .biome-list .launch { color: var(--amber); font-size: 0.78rem; font-family: 'Cinzel', serif; letter-spacing: 0.1em; }
-
-    /* Games pair inside Clockwork */
-    .games-pair {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    @media (max-width: 500px) { .games-pair { grid-template-columns: 1fr; } }
-    .game-tile {
-      background: rgba(44,34,24,0.5);
+      color: var(--mist);
       border: 1px solid var(--stone);
-      padding: 1rem 1.1rem 1.2rem;
+      padding: 0.22em 0.75em;
+      white-space: nowrap;
     }
-    .game-tile h4 {
-      font-family: 'Cinzel', serif;
-      font-size: 0.9rem;
-      color: var(--ember);
-      margin-bottom: 0.4rem;
-    }
-    .game-tile p { font-size: 0.83rem; opacity: 0.75; margin-bottom: 0; }
 
-    /* ── ARCHETYPE / IDENTITY ──────────────────────────────────── */
-    .identity-grid {
-      display: grid;
-      grid-template-columns: 3fr 2fr;
-      gap: 4rem;
-      align-items: start;
-    }
-    @media (max-width: 660px) { .identity-grid { grid-template-columns: 1fr; gap: 2.8rem; } }
-
-    .kinship-list { list-style: none; margin-top: 0.6rem; }
-    .kinship-list li {
-      padding: 0.5rem 0;
-      border-bottom: 1px solid var(--stone);
-      font-size: 0.88rem;
+    /* ── THE WORKSHOP (quieter, more muted cards) ──────────────── */
+    .workshop-intro {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
+      font-size: 1.08rem;
       color: var(--parchment);
-      opacity: 0.8;
-      display: flex;
-      gap: 0.7rem;
-      align-items: baseline;
+      opacity: 0.62;
+      margin-bottom: 0.5rem;
     }
-    .kinship-list li::before {
-      content: '◈';
-      color: var(--amber);
-      font-size: 0.46rem;
-      flex-shrink: 0;
-      position: relative; top: -2px;
+    .workshop-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.2rem;
+      margin-top: 2.6rem;
+    }
+    .card-muted {
+      background: rgba(20,16,9,0.55);
+      border-color: rgba(44,34,24,0.55);
+      padding: 1.5rem 1.6rem 1.7rem;
+    }
+    .card-muted h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .card-muted p { font-size: 0.88rem; opacity: 0.72; }
+    .card-muted:hover { border-color: rgba(232,160,48,0.35); box-shadow: 0 0 22px rgba(232,160,48,0.06); }
+
+    /* ── ABOUT ─────────────────────────────────────────────────── */
+    .about { max-width: 680px; }
+    .about p { font-size: 1.02rem; opacity: 0.85; line-height: 1.8; }
+    .about-final {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
+      font-size: 1.22rem;
+      color: var(--ember);
+      opacity: 0.72;
+      margin-top: 2rem;
     }
 
     /* ── FOOTER ────────────────────────────────────────────────── */
@@ -406,236 +371,112 @@
       text-align: center;
       padding: 3.5rem 2rem;
     }
-    .footer-mark {
+    .footer-name {
+      font-family: 'Cinzel', serif;
+      font-size: 0.72rem;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: var(--amber);
+      opacity: 0.9;
+      margin-bottom: 0.6rem;
+    }
+    .footer-contact { font-size: 0.98rem; opacity: 0.78; margin-bottom: 0.2rem; }
+    .footer-sig {
       font-family: 'IM Fell English', Georgia, serif;
       font-style: italic;
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--mist);
-      margin-bottom: 0.5rem;
+      opacity: 0.8;
+      margin-top: 1.4rem;
     }
-    .footer-sub {
-      font-family: 'Cinzel', serif;
-      font-size: 0.58rem;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--stone);
-    }
-    footer a { color: var(--amber); text-decoration: none; opacity: 0.7; transition: opacity 0.2s; }
+    footer a { color: var(--amber); text-decoration: none; opacity: 0.85; transition: opacity 0.2s; }
     footer a:hover { opacity: 1; }
 
     :focus-visible { outline: 2px solid var(--amber); outline-offset: 3px; }
 
     @media (max-width: 580px) {
       .section-wrap { padding: 4rem 1.4rem; }
-      .manifesto { padding: 5rem 1.4rem 4rem; }
-      .projects-grid { grid-template-columns: 1fr; }
+      .intro { padding: 5rem 1.4rem 4.5rem; }
     }
   </style>
 </head>
 <body>
 
   <!-- ═══════════════════════════════════════════════════
-       HERO
+       SECTION 1 — HERO
   ═══════════════════════════════════════════════════ -->
   <header class="hero">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-content">
+      <p class="hero-eyebrow">Independent Creative Studio</p>
       <h1>BridgeTender<br/>Studio</h1>
-      <p class="hero-tagline">Light your threshold. Someone is waiting on the other side.</p>
-      <a href="#manifesto" class="hero-scroll" aria-label="Enter the studio">
-        Enter
-        <svg width="16" height="22" viewBox="0 0 16 22" fill="none" aria-hidden="true">
-          <path d="M8 0v18M1 12l7 8 7-8" stroke="#e8a030" stroke-width="1.4"
-                stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
+      <p class="hero-tagline">Games, stories, paper, and imagined worlds.</p>
+      <a href="#intro" class="hero-cta">Enter the Studio</a>
     </div>
   </header>
 
   <div class="lantern-rule"></div>
 
   <!-- ═══════════════════════════════════════════════════
-       MANIFESTO
+       SECTION 2 — INTRODUCTION
   ═══════════════════════════════════════════════════ -->
-  <section class="manifesto" id="manifesto">
-    <p class="manifesto-eyebrow">The Manifesto</p>
-    <blockquote>
-      They live where we're not looking. Every culture keeps small folk in liminal spaces —
-      Borrowers in walls, Fraggles under gardens, Menehune building at night,
-      kodama in trees, gnomes under mushrooms. We love the places our minds
-      aren't allowed to go: the wardrobe to Narnia, Platform 9¾, the crossing
-      at the edge of every map. BridgeTender Studio builds doors to those places.
-    </blockquote>
-    <p class="manifesto-sub">
-      The bridge itself is always illuminated. The in-between space is safe, known, well-lit.
-      What lies on either side is unknown. That is where we work.
-    </p>
+  <section class="intro" id="intro">
+    <p class="intro-lead">Between worlds is where the wonder begins.</p>
+    <p>At the crossing between craft and story, reflection and play, the practical and the imagined, ideas gather from both banks and become something new.</p>
   </section>
 
   <div class="lantern-rule"></div>
 
   <!-- ═══════════════════════════════════════════════════
-       THE PROJECTS
+       SECTION 3 — PROJECT GALLERY
   ═══════════════════════════════════════════════════ -->
-  <section class="section-wrap" id="projects">
+  <section class="section-wrap gallery" id="work">
     <p class="section-eyebrow">The Work</p>
-    <h2>Worlds in Progress</h2>
-    <p class="lead">Every project is a door. Some are nearly open; some are still being carved from stone.</p>
+    <h2>What We've Built</h2>
 
+    <!-- Lean portal tiles: type · title · one line · CTA/status. Card art (a screenshot or
+         illustration) can later sit at the top of each tile; text-only for now. -->
     <div class="projects-grid">
 
-      <!-- BETWEEN WORLDS — featured full-width -->
-      <a class="card card-featured" href="/between-worlds/">
-        <div>
-          <p class="card-tag">Project I · Flagship · Miniature Worlds</p>
-          <h3>Between Worlds</h3>
-          <span class="card-sub">"Wait — that's alive?"</span>
-          <p>
-            Modular miniature landscape components for living micro-worlds.
-            Real spiderwood, slate, river stones, living moss, and otherworldly succulents —
-            paired with architecture that disappears into the landscape so completely
-            nobody knows it was printed.
-          </p>
-          <p>
-            The founding insight: hidden planters. Wedge, round pocket, column, overhang,
-            root pocket, mushroom cap — tiny vessels that vanish into stone and root so
-            you're building a world, not arranging a shelf. Recessed warm LEDs hidden
-            in spiderwood cavities. Fairy doors with working hinges and frosted windows
-            glowing from within. A paragraph of myth with every piece.
-          </p>
-          <p>
-            Assembled worlds: $175–225. Components: planters $18–28,
-            fairy door $34, lantern $45. Every order ships with an illustrated
-            parchment map of all seven biomes.
-          </p>
-          <span class="card-status">Flagship · Launching with The Hollow</span>
-          <span class="card-cta">Enter →</span>
-        </div>
-        <div>
-          <p class="section-eyebrow" style="margin-bottom:0.9rem;">The Seven Biomes</p>
-          <ul class="biome-list">
-            <li><strong>The Hollow</strong> — English/Irish fairy wood &nbsp;<span class="launch">← Start here</span></li>
-            <li><strong>The Menehune Shore</strong> — Hawaiian; gift shop natural</li>
-            <li><strong>The Kitsune Wood</strong> — Japanese forest spirits</li>
-            <li><strong>The Dwarf Deeps</strong> — underground stone world</li>
-            <li><strong>The Sacred Grove</strong> — sacred geometry</li>
-            <li><strong>The Oasis</strong> — desert threshold</li>
-            <li><strong>The Tidal Reach</strong> — shoreline and sea</li>
-          </ul>
-          <p style="margin-top:1.3rem; font-size:0.84rem; opacity:0.65; font-style:italic;">
-            First three pieces: fairy door, wedge planter, amanita cluster.
-            One world, perfected, before the next biome opens.
-          </p>
-        </div>
+      <!-- Harmony -->
+      <a class="card" href="/harmony/">
+        <p class="card-tag">Card Game</p>
+        <h3>Harmony</h3>
+        <p class="portal-line">Terrain, seasons, and celestial balance.</p>
+        <div class="card-foot"><span class="card-link">Play Harmony →</span></div>
       </a>
 
-      <!-- ROOT AWAKENINGS -->
-      <a class="card" href="/root-awakenings/">
-        <p class="card-tag">Project II · Living Gifts</p>
-        <h3>Root Awakenings</h3>
-        <span class="card-sub">The irreverent sister brand</span>
-        <p>
-          Obscure "wait, that's alive?" succulents — Haworthia cooperi, lithops,
-          string of pearls, Albuca spiralis — paired with stickers and mugs that make
-          you snort on the subway. <em>Succ Life. Don't Be a Prick. I Wet My Plants Again.</em>
-        </p>
-        <p>
-          The name puns on "Rude Awakenings" — intentional. Humor is the entry door;
-          Between Worlds is the wonder door. Same customer, different angle, same journey
-          toward noticing the world is stranger than it looks.
-        </p>
-        <span class="card-status">In Development</span>
-        <span class="card-cta">Enter →</span>
+      <!-- Wyldroot -->
+      <a class="card" href="https://instagram.com/wyldrootgame" target="_blank" rel="noopener noreferrer">
+        <p class="card-tag">Card Game</p>
+        <h3>Wyldroot</h3>
+        <p class="portal-line">Forage the ancient forest. Gather what heals.</p>
+        <div class="card-foot"><span class="card-link">Follow @wyldrootgame ↗</span></div>
       </a>
 
-      <!-- CLOCKWORK GAMES — its two games are the doors -->
-      <div class="card">
-        <p class="card-tag">Project III · Game Studio</p>
-        <h3>Clockwork Games</h3>
-        <span class="card-sub">Every game needs at least two gears turning</span>
-        <p>
-          Three interlocking gears: Design, Mechanics, Story.
-          Two games currently in development under the studio mark —
-          passion-scale, not profit-scale.
-        </p>
-        <div class="games-pair">
-          <a class="game-tile" href="/harmony/">
-            <h4>Harmony</h4>
-            <p>Rummy-style terrain and season card game. Sixteen terrain cards,
-            four seasons, mountain wilds, fog blockers, four celestial wild cards.
-            Near complete. Target: UK Games Expo.</p>
-            <span class="tile-cta">Play the teaser →</span>
-          </a>
-          <a class="game-tile" href="/wildroot/">
-            <h4>Wildroot</h4>
-            <p>You are the herbalist of Eldermere, foraging the ancient forest
-            to cure ailments. Playtested in Europe. Beloved. Awaiting its moment.</p>
-            <span class="tile-cta">Coming soon →</span>
-          </a>
-        </div>
-        <span class="card-status">Harmony: Playable Teaser &nbsp;·&nbsp; Wildroot: In Development</span>
-      </div>
-
-      <!-- THE BOOK -->
-      <a class="card" href="/the-book/">
-        <p class="card-tag">Project IV · Novel</p>
-        <h3>The Book</h3>
-        <span class="card-sub">Theo doesn't know what he is yet</span>
-        <p>
-          A bridge tender who thinks he's the seeker trying to understand the other side.
-          The arc reveals he was always the keeper of the crossing.
-          His object is the lantern — carried not to see by, but to be found.
-        </p>
-        <p>
-          The book and Between Worlds share the lantern. Readers find the product;
-          customers find the book. One feeds the other indefinitely.
-        </p>
-        <span class="card-status">Early Chapters</span>
-        <span class="card-cta">Enter →</span>
-      </a>
-
-      <!-- THE ART OF SOULCRAFT — live product (formerly The Archetype Deck) -->
-      <a class="card" href="https://artofsoulcraft.com" target="_blank" rel="noopener">
-        <p class="card-tag">Project V · Living Archetype System</p>
+      <!-- The Art of Soulcraft -->
+      <a class="card" href="https://artofsoulcraft.com" target="_blank" rel="noopener noreferrer">
+        <p class="card-tag">Reflection Instrument</p>
         <h3>The Art of Soulcraft</h3>
-        <span class="card-sub">You are not one of twelve types — you are all twelve.</span>
-        <p>
-          A living mirror built on twelve archetypal voices. Not a personality test —
-          a map of which voices in you speak loudest, which stay quiet, and what happens
-          when one of them goes too long unheard.
-        </p>
-        <p>
-          Campbell, Jung, Myss, and Pearson territory, made interactive: take the
-          assessment, meet your Mandala, and sit with the companion who reads it back
-          to you. The BridgeTender archetype, grown into its own world.
-        </p>
-        <span class="card-status">Live · artofsoulcraft.com</span>
-        <span class="card-cta">Visit the site →</span>
+        <p class="portal-line">A lens and mirror for the inner life.</p>
+        <div class="card-foot"><span class="card-link">Enter Soulcraft ↗</span></div>
       </a>
 
-      <!-- WORLD TREE CHRONICLES -->
-      <a class="card" href="/world-tree-chronicles/">
-        <p class="card-tag">Project VI · Chronicles</p>
+      <!-- Bliss Cotton Paper -->
+      <a class="card" href="https://blisscottonpaper.com" target="_blank" rel="noopener noreferrer">
+        <p class="card-tag">Paper &amp; Print</p>
+        <h3>Bliss Cotton Paper</h3>
+        <p class="portal-line">Paper worth keeping.</p>
+        <div class="card-foot"><span class="card-link">Visit Bliss ↗</span></div>
+      </a>
+
+      <!-- World Tree Chronicles -->
+      <div class="card">
+        <p class="card-tag">Novel</p>
         <h3>World Tree Chronicles</h3>
-        <span class="card-sub">The roots go deeper than any single world</span>
-        <p>
-          A project taking shape. Details forthcoming.
-        </p>
-        <span class="card-status">Coming</span>
-        <span class="card-cta">Enter →</span>
-      </a>
-
-      <!-- MUSIC -->
-      <a class="card" href="/music/">
-        <p class="card-tag">Project VII · Music</p>
-        <h3>Music</h3>
-        <span class="card-sub">Sound at the threshold</span>
-        <p>
-          A project taking shape. Details forthcoming.
-        </p>
-        <span class="card-status">Coming</span>
-        <span class="card-cta">Enter →</span>
-      </a>
+        <p class="portal-line">A story still growing beneath the roots.</p>
+        <div class="card-foot"><span class="card-status">Coming</span></div>
+      </div>
 
     </div>
   </section>
@@ -643,53 +484,30 @@
   <div class="lantern-rule"></div>
 
   <!-- ═══════════════════════════════════════════════════
-       THE ARCHETYPE
+       SECTION 4 — THE WORKSHOP
   ═══════════════════════════════════════════════════ -->
-  <section class="section-wrap" id="about">
-    <div class="identity-grid">
-      <div>
-        <p class="section-eyebrow">The Archetype</p>
-        <h2>The BridgeTender</h2>
-        <p class="lead">Not the hero who crosses — the one who makes crossing possible.</p>
-        <p>
-          The BridgeTender lives between worlds and belongs fully to neither.
-          He tends the crossing. Lights the lantern — not to guide himself,
-          but so others can find the way. The bridge itself is always illuminated.
-          That is his only work.
-        </p>
-        <p>
-          Its founder was an educator for thirty years. Shepherding people across
-          thresholds is a lifelong pattern. This studio is the same work,
-          dressed in different materials.
-        </p>
-        <p>
-          The archetype touches Campbell, Jung, Myss, and Pearson — but none of them
-          named it quite this way. The Psychopomp. Charon. The Hermit with his lantern.
-          Heimdall at the Bifröst. Janus at the gate. The lamplighter on the empty street.
-          All partial descriptions of one thing.
-        </p>
-        <p style="font-family:'IM Fell English',Georgia,serif; font-style:italic;
-                  font-size:1.05rem; opacity:0.9; margin-top:1.4rem;">
-          "If you can see this light, you're my kind of person. Come across."
-        </p>
+  <section class="section-wrap">
+    <p class="section-eyebrow">The Workshop</p>
+    <h2>Still Becoming</h2>
+    <p class="workshop-intro">Some things take longer to cross the threshold. They belong here until they're ready.</p>
+
+    <div class="workshop-grid">
+      <div class="card card-muted">
+        <h3>Root Awakenings</h3>
+        <p>Irreverent living gifts. Obscure succulents, humor as the entry door, wonder as the destination.</p>
+        <div class="card-foot"><span class="card-status">Coming</span></div>
       </div>
-      <div>
-        <p class="section-eyebrow">The Kinship</p>
-        <h2>Those Who Came Before</h2>
-        <ul class="kinship-list">
-          <li>Wil Huygen &amp; Rien Poortvliet — <em>Gnomes</em>, 1977</li>
-          <li>Alan Lee's Tolkien illustrations</li>
-          <li>Brian Froud's fairy art</li>
-          <li>The wardrobe to Narnia</li>
-          <li>Platform 9¾</li>
-          <li>The Hermit — Tarot IX</li>
-          <li>Heimdall at the Bifröst</li>
-          <li>Borrowers in walls, Fraggles under gardens</li>
-          <li>Menehune building at night</li>
-          <li>Kodama in trees, gnomes under mushrooms</li>
-          <li>Xanth crossings</li>
-          <li>Every threshold every culture has ever named</li>
-        </ul>
+
+      <div class="card card-muted">
+        <h3>Between Worlds</h3>
+        <p>Modular miniature living worlds: real moss, real stone, real light. Seven biomes, starting with The Hollow. (Lives within Root Awakenings.)</p>
+        <div class="card-foot"><span class="card-status">In the Workshop</span></div>
+      </div>
+
+      <div class="card card-muted">
+        <h3>Privateer</h3>
+        <p>A space game. The frontier between law and freedom, empire and open sky.</p>
+        <div class="card-foot"><span class="card-status">Early Stage</span></div>
       </div>
     </div>
   </section>
@@ -697,19 +515,32 @@
   <div class="lantern-rule"></div>
 
   <!-- ═══════════════════════════════════════════════════
-       FOOTER
+       SECTION 5 — ABOUT
+  ═══════════════════════════════════════════════════ -->
+  <section class="section-wrap about">
+    <p class="section-eyebrow">The Maker</p>
+    <h2>Who Tends the Bridge?</h2>
+    <p>BridgeTender Studio is the independent creative workshop of Marc Simmons.</p>
+    <p>Across education, games, paper, psychology, and design, his work has taken many forms. This studio gathers those forms under one roof.</p>
+    <p>Marc is a lifelong educator and coach. Shepherding people across thresholds is his life pattern. This studio is the same work, just in different materials.</p>
+    <p>Some projects became businesses. Some became playable worlds. Some are still on the workbench.</p>
+    <p class="about-final">The materials change. The curiosity remains.</p>
+  </section>
+
+  <div class="lantern-rule"></div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SECTION 6 — FOOTER
   ═══════════════════════════════════════════════════ -->
   <footer>
-    <p class="footer-sub">
-      BridgeTender Studio &nbsp;·&nbsp;
-      <a href="mailto:hello@bridgetenderstudio.com">hello@bridgetenderstudio.com</a>
-      &nbsp;·&nbsp; bridgetenderstudio.com
-    </p>
+    <p class="footer-name">BridgeTender Studio</p>
+    <p class="footer-contact"><a href="mailto:hello@bridgetenderstudio.com">hello@bridgetenderstudio.com</a></p>
+    <p class="footer-contact">bridgetenderstudio.com</p>
+    <p class="footer-sig">Created and tended by Marc Simmons.</p>
   </footer>
 
   <script>
-    // Hero image fallback to warm radial glow
-    // Force hero image with cache bust
+    // Hero image — force with a cache-bust so a corrected hero.png shows immediately.
     const heroBg = document.getElementById('heroBg');
     heroBg.style.backgroundImage = "url('hero.png?v=" + Date.now() + "')";
 
