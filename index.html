@@ -260,6 +260,36 @@
       background: var(--shadow);
     }
     .card-image.logo { object-position: center; } /* centered logo art crops evenly, not top-anchored */
+
+    /* Branded cover panels for the two live sites — self-contained, no external
+       screenshot dependency (a live-screenshot service captured error/blank frames). */
+    .card-cover {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--stone);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-cover::after {
+      font-family: 'Cinzel', serif;
+      font-size: 4.4rem;
+      line-height: 1;
+      opacity: 0.28;
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+    .card:hover .card-cover::after { opacity: 0.42; transform: scale(1.06); }
+    .cover-bliss {
+      background: radial-gradient(circle at 32% 30%, #46351f 0%, #211812 55%, #100c08 100%);
+    }
+    .cover-bliss::after { content: '❦'; color: var(--ember); }
+    .cover-soulcraft {
+      background: radial-gradient(circle at 50% 42%, #4a3410 0%, #1c1409 58%, #0c0906 100%);
+    }
+    .cover-soulcraft::after { content: '☉'; color: var(--amber); }
+
     .card-body {
       padding: 1.4rem 1.4rem 1.3rem;
       display: flex;
@@ -469,7 +499,7 @@
 
       <!-- Bliss Cotton Paper — wide -->
       <a class="card card-wide" href="https://blisscottonpaper.com" target="_blank" rel="noopener noreferrer">
-        <img class="card-image" src="https://api.microlink.io/?url=https://blisscottonpaper.com&screenshot=true&embed=screenshot.url" alt="Bliss Cotton Paper" loading="lazy" />
+        <div class="card-cover cover-bliss" aria-hidden="true"></div>
         <div class="card-body">
           <p class="card-tag">Paper &amp; Print</p>
           <h3>Bliss Cotton Paper</h3>
@@ -481,7 +511,7 @@
 
       <!-- The Art of Soulcraft — wide -->
       <a class="card card-wide" href="https://artofsouldcraft.com" target="_blank" rel="noopener noreferrer">
-        <img class="card-image" src="https://api.microlink.io/?url=https://artofsouldcraft.com&screenshot=true&embed=screenshot.url" alt="The Art of Soulcraft" loading="lazy" />
+        <div class="card-cover cover-soulcraft" aria-hidden="true"></div>
         <div class="card-body">
           <p class="card-tag">Reflection Instrument</p>
           <h3>The Art of Soulcraft</h3>
