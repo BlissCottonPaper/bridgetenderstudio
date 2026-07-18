@@ -220,24 +220,32 @@
     p { color: var(--parchment); margin-bottom: 1.1rem; font-size: 1rem; opacity: 0.82; }
     p:last-child { margin-bottom: 0; }
 
-    /* ── PROJECT GRID ──────────────────────────────────────────── */
+    /* ── PROJECT GRID — five visual portal tiles ──────────────── */
+    .section-wrap.gallery { max-width: 1160px; }
     .projects-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 1.4rem;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1rem;
       margin-top: 3rem;
     }
+    @media (max-width: 1100px) { .projects-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (max-width: 760px)  { .projects-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 520px)  { .projects-grid { grid-template-columns: 1fr; } }
 
     .card {
       background: var(--shadow);
       border: 1px solid var(--stone);
-      padding: 2rem 2rem 2.2rem;
+      padding: 1.6rem 1.4rem 1.5rem;
       position: relative;
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      min-height: 210px;
+      transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
     }
+    /* A portal tile is the whole card — clickable, lifting a touch on hover. */
+    a.card { text-decoration: none; color: inherit; cursor: pointer; }
+    a.card:hover { transform: translateY(-4px); }
     .card::before {
       content: '';
       position: absolute;
@@ -276,6 +284,17 @@
       margin-bottom: 0.9rem;
     }
     .card p { font-size: 0.91rem; line-height: 1.68; opacity: 0.82; }
+    /* Portal tile: one short line under the title (lean, not text-heavy). */
+    .portal-line {
+      font-family: 'IM Fell English', Georgia, serif;
+      font-style: italic;
+      font-size: 0.92rem;
+      color: var(--parchment);
+      opacity: 0.76;
+      line-height: 1.5;
+      margin-bottom: 0.9rem;
+    }
+    a.card:hover .card-link { opacity: 1; color: var(--ember); }
 
     /* Bottom row of a card: an optional doorway link + the status badge */
     .card-foot {
@@ -378,7 +397,6 @@
     @media (max-width: 580px) {
       .section-wrap { padding: 4rem 1.4rem; }
       .intro { padding: 5rem 1.4rem 4.5rem; }
-      .projects-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -390,7 +408,7 @@
   <header class="hero">
     <div class="hero-bg" id="heroBg"></div>
     <div class="hero-content">
-      <p class="hero-eyebrow">Between Worlds · Stories from the Threshold</p>
+      <p class="hero-eyebrow">Independent Creative Studio</p>
       <h1>BridgeTender<br/>Studio</h1>
       <p class="hero-tagline">Games, stories, paper, and imagined worlds.</p>
       <a href="#intro" class="hero-cta">Enter the Studio</a>
@@ -403,10 +421,8 @@
        SECTION 2 — INTRODUCTION
   ═══════════════════════════════════════════════════ -->
   <section class="intro" id="intro">
-    <p class="intro-lead">Some places seem ordinary until a lantern is lit.</p>
-    <p>BridgeTender Studio is the workshop behind a growing collection of games, stories, crafted paper, and tools for reflection.</p>
-    <p class="accent">Different worlds. One maker.</p>
-    <a href="#work" class="intro-link">Explore the work ↓</a>
+    <p class="intro-lead">Between worlds is where the wonder begins.</p>
+    <p>At the crossing between craft and story, reflection and play, the practical and the imagined, ideas gather from both banks and become something new.</p>
   </section>
 
   <div class="lantern-rule"></div>
@@ -414,69 +430,52 @@
   <!-- ═══════════════════════════════════════════════════
        SECTION 3 — PROJECT GALLERY
   ═══════════════════════════════════════════════════ -->
-  <section class="section-wrap" id="work">
+  <section class="section-wrap gallery" id="work">
     <p class="section-eyebrow">The Work</p>
     <h2>What We've Built</h2>
 
+    <!-- Lean portal tiles: type · title · one line · CTA/status. Card art (a screenshot or
+         illustration) can later sit at the top of each tile; text-only for now. -->
     <div class="projects-grid">
 
       <!-- Harmony -->
-      <div class="card">
+      <a class="card" href="/harmony/">
         <p class="card-tag">Card Game</p>
         <h3>Harmony</h3>
-        <span class="card-sub">A card game of landscapes, seasons, and balance.</span>
-        <p>Nature moves in patterns. So do you. Collect sixteen terrain cards across four directions before the seasons steal them back. Mountains remember. Fog obscures. Wind moves on.</p>
-        <div class="card-foot">
-          <a class="card-link" href="/harmony/">Play the teaser →</a>
-          <span class="card-status">Near Complete</span>
-        </div>
-      </div>
+        <p class="portal-line">Terrain, seasons, and celestial balance.</p>
+        <div class="card-foot"><span class="card-link">Play Harmony →</span></div>
+      </a>
 
       <!-- Wyldroot -->
-      <div class="card">
+      <a class="card" href="https://instagram.com/wyldrootgame" target="_blank" rel="noopener noreferrer">
         <p class="card-tag">Card Game</p>
         <h3>Wyldroot</h3>
-        <span class="card-sub">Forage the ancient forest. Gather what heals.</span>
-        <p>You are the herbalist of Eldermere. The Wyldwood does not want to be mapped. The road you walked yesterday is not the road you'll find today. Playtested in Europe. Beloved.</p>
-        <div class="card-foot">
-          <a class="card-link" href="https://instagram.com/wyldroot_game" target="_blank" rel="noopener noreferrer">Follow @wyldroot_game ↗</a>
-          <span class="card-status">In Development</span>
-        </div>
-      </div>
+        <p class="portal-line">Forage the ancient forest. Gather what heals.</p>
+        <div class="card-foot"><span class="card-link">Follow @wyldrootgame ↗</span></div>
+      </a>
 
       <!-- The Art of Soulcraft -->
-      <div class="card">
+      <a class="card" href="https://artofsoulcraft.com" target="_blank" rel="noopener noreferrer">
         <p class="card-tag">Reflection Instrument</p>
         <h3>The Art of Soulcraft</h3>
-        <span class="card-sub">Tools for understanding the stories beneath the surface.</span>
-        <p>A twelve-archetype psychological reflection instrument. Not a quiz. A mirror. Discover your primary mandala, understand your Bandwidth, and find the white dot.</p>
-        <div class="card-foot">
-          <a class="card-link" href="https://artofsoulcraft.com" target="_blank" rel="noopener noreferrer">Enter the Instrument ↗</a>
-          <span class="card-status">Live</span>
-        </div>
-      </div>
+        <p class="portal-line">A lens and mirror for the inner life.</p>
+        <div class="card-foot"><span class="card-link">Enter Soulcraft ↗</span></div>
+      </a>
 
       <!-- Bliss Cotton Paper -->
-      <div class="card">
+      <a class="card" href="https://blisscottonpaper.com" target="_blank" rel="noopener noreferrer">
         <p class="card-tag">Paper &amp; Print</p>
         <h3>Bliss Cotton Paper</h3>
-        <span class="card-sub">Paper worth keeping.</span>
-        <p>Fine cotton paper, letterpress stationery, and wedding goods — built alongside Marc's daughter. The business that funds the studio and proves that beautiful things find their people.</p>
-        <div class="card-foot">
-          <a class="card-link" href="https://blisscottonpaper.com" target="_blank" rel="noopener noreferrer">Visit Bliss Cotton Paper ↗</a>
-          <span class="card-status">Live &amp; Shipping</span>
-        </div>
-      </div>
+        <p class="portal-line">Paper worth keeping.</p>
+        <div class="card-foot"><span class="card-link">Visit Bliss ↗</span></div>
+      </a>
 
       <!-- World Tree Chronicles -->
       <div class="card">
         <p class="card-tag">Novel</p>
         <h3>World Tree Chronicles</h3>
-        <span class="card-sub">A story still growing beneath the roots.</span>
-        <p>A boy who dreamwalks. A dreamscape called the Ever After, where souls come, go, and are renewed. He sees the real story beneath everyone's surface. He does not yet know what that makes him.</p>
-        <div class="card-foot">
-          <span class="card-status">Coming</span>
-        </div>
+        <p class="portal-line">A story still growing beneath the roots.</p>
+        <div class="card-foot"><span class="card-status">Coming</span></div>
       </div>
 
     </div>
