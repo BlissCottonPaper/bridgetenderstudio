@@ -64,3 +64,12 @@ export const OUR_WORK = {
   intro:
     'Games, instruments, and handmade things — each one an idea we helped carry across the bridge. More are always taking shape.',
 };
+
+export const PLAY = {
+  eyebrow: 'Play',
+  title: 'Cross into a game',
+  intro:
+    'Step into the worlds we have made playable. Each game has a home of its own — read a while, then cross the threshold into play.',
+  featuredLabel: 'Featured Game',
+  upcomingLabel: 'More at the workbench',
+};
