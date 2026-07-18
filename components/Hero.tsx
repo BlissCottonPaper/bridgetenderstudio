@@ -7,7 +7,7 @@ import { HOME } from '@/lib/copy';
  * opening statement. Warm, mysterious, handcrafted, inviting.
  */
 export function Hero() {
-  const { eyebrow, statement, cta } = HOME.hero;
+  const { eyebrow, cta } = HOME.hero;
 
   return (
     <section className="relative isolate flex min-h-[88vh] items-center overflow-hidden">
@@ -41,12 +41,9 @@ export function Hero() {
         <LanternRule short className="mx-auto mt-6" />
 
         <h1 className="mt-8 animate-fade-up font-body text-4xl font-medium leading-[1.18] tracking-wide text-parchment sm:text-5xl md:text-6xl">
-          BridgeTender Studio is an independent creative studio helping{' '}
-          <span className="text-ember">meaningful ideas become reality.</span>
+          BridgeTender Studio helps ideas{' '}
+          <span className="text-ember">find their way into the world.</span>
         </h1>
-
-        {/* Screen-reader-complete statement in case the emphasis split confuses parsing. */}
-        <span className="sr-only">{statement}</span>
 
         <div className="mt-11 flex animate-fade-up items-center justify-center">
           <CTAButton href={cta.href} variant="primary" className="px-8 py-3.5 text-[0.95rem]">
