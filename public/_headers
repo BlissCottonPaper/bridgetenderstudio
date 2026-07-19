@@ -1,0 +1,12 @@
+# Cloudflare Pages cache rules.
+# HTML documents must always revalidate: a redeploy changes the hashed chunk
+# names, and a stale cached document would ask for chunks that no longer exist
+# (404 -> ChunkLoadError). Revalidating the document keeps it in step with the
+# assets it references. The hashed build assets are immutable, so cache hard.
+# (Later, more-specific rules take precedence on Cloudflare Pages.)
+
+/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/_next/static/*
+  Cache-Control: public, max-age=31536000, immutable
