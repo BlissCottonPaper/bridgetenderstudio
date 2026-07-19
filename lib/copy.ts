@@ -104,6 +104,43 @@ export const PLAY = {
   upcomingLabel: 'More at the workbench',
 };
 
+export const STUDIO = {
+  eyebrow: 'The Studio',
+  // The deeper identity statement — myth voice, front and center.
+  identity: 'BridgeTender tends the crossing between your idea and the world beyond.',
+  // The manifesto whisper — shown, never explained.
+  whisper: 'They live where we’re not looking.',
+  mission: {
+    heading: 'The Mission',
+    line: 'BridgeTender Studio helps ideas find their way into the world.',
+    body: 'Every idea begins as something only you can see. Our work is the crossing — the bridge from the half-formed thing in the mind to something real enough to hold, to play, to share.',
+  },
+  philosophy: {
+    heading: 'Between Worlds',
+    body: [
+      'The most interesting things happen at the threshold — the place between what is imagined and what is made, between the world you know and the one just past it.',
+      'That in-between is not empty. It is where the wonder begins. A BridgeTender does not guard the crossing. A BridgeTender lights it, and walks you across.',
+    ],
+  },
+  approach: {
+    heading: 'How We Tend the Crossing',
+    body: [
+      'We shorten the distance between an idea and its first breath. Plain language in; something playable out. The hard machinery — the scaffolding, the systems, the wiring — stays behind the curtain, where it belongs.',
+      'What you keep is the making, and the quiet wonder of watching your idea stand up on its own.',
+    ],
+  },
+  process: {
+    heading: 'The Making',
+    body: 'Every project walks the same lantern-lit path — imagine, shape, prototype, play, refine, and, when it is ready, publish. We move in small, honest steps, and we let the work tell us when it has come alive.',
+  },
+  future: {
+    heading: 'What’s Ahead',
+    body: 'We are building Lantern — a place where anyone can sit down, describe a world in their own words, and watch it become playable. Games first, then more. The bridge is being widened, so that more ideas, from more people, can find their way across.',
+    cta: { label: 'See Lantern', href: ROUTES.lantern },
+  },
+  close: 'Bring us the thing only you can see. We will help it into the light.',
+};
+
 export const LANTERN = {
   eyebrow: 'The Platform',
   name: PLATFORM_NAME,
