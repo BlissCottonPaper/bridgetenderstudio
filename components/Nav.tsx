@@ -52,7 +52,14 @@ export function Nav() {
           className="group flex items-center gap-2.5 font-display text-ember"
           aria-label={`${STUDIO_NAME} — home`}
         >
-          <LanternGlyph className="h-6 w-6 text-amber transition-colors group-hover:text-ember" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/favicon-32x32.png"
+            alt=""
+            width={32}
+            height={32}
+            className="h-7 w-7 rounded transition-transform group-hover:scale-105"
+          />
           <span className="text-base font-semibold tracking-[0.14em] sm:text-lg">
             BridgeTender
           </span>
