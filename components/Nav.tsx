@@ -54,11 +54,11 @@ export function Nav() {
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/favicon-32x32.png"
+            src="/favicon-64x64.png"
             alt=""
-            width={32}
-            height={32}
-            className="h-7 w-7 rounded transition-transform group-hover:scale-105"
+            width={64}
+            height={64}
+            className="h-8 w-8 rounded transition-transform group-hover:scale-105"
           />
           <span className="text-base font-semibold tracking-[0.14em] sm:text-lg">
             BridgeTender
