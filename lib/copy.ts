@@ -7,10 +7,11 @@ import { PLATFORM_NAME, ROUTES } from './constants';
 export const HOME = {
   hero: {
     eyebrow: 'Independent Creative Workshop',
-    // Locked. No qualifiers that filter which ideas belong — every idea is welcome.
-    statement: 'BridgeTender Studio helps ideas find their way into the world.',
+    // Plainspoken register (locked): the studio's practical function.
+    // The mythic register lives on /the-studio and must not echo this.
+    statement: 'BridgeTender Studio helps ideas find form.',
     // The ember-lit phrase within the statement (kept in sync with `statement`).
-    emphasis: 'find their way into the world.',
+    emphasis: 'find form.',
     cta: { label: 'Explore Our Work', href: ROUTES.ourWork },
   },
 

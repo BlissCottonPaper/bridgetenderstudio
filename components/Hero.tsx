@@ -41,8 +41,7 @@ export function Hero() {
         <LanternRule short className="mx-auto mt-6" />
 
         <h1 className="mt-8 animate-fade-up font-body text-4xl font-medium leading-[1.18] tracking-wide text-parchment sm:text-5xl md:text-6xl">
-          BridgeTender Studio helps ideas{' '}
-          <span className="text-ember">find their way into the world.</span>
+          BridgeTender Studio helps ideas <span className="text-ember">find form.</span>
         </h1>
 
         <div className="mt-11 flex animate-fade-up items-center justify-center">
