@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Harmony — Rules</title>
+<!-- Player-facing rulebook for Harmony build v15. Served at /harmony/rules; opened from the in-game 📖 Rules link. -->
+<style>
+  :root{
+    --parchment:#e9e0cc; --paper:#f3ecd9; --ink:#3a3428; --north:#3b6ea5; --east:#c1662f;
+    --south:#d4a017; --west:#6b4e8c; --neutral:#7d7566; --gold:#b8912f; --felt:#2f3a30; --cel:#7a5ca8;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--felt);color:var(--ink);font-family:Georgia,'Times New Roman',serif;line-height:1.62;}
+  .sheet{max-width:780px;margin:0 auto;background:radial-gradient(circle at 20% 0%, #f6f0df, var(--paper) 60%);
+    padding:54px 60px 80px;box-shadow:0 0 40px #0009;min-height:100vh;}
+  header.book{text-align:center;border-bottom:2px solid var(--gold);padding-bottom:22px;margin-bottom:8px;}
+  header.book h1{font-size:44px;letter-spacing:8px;margin:0;color:#4a3f22;}
+  header.book .tag{font-style:italic;color:#8a7c52;font-size:17px;letter-spacing:1px;}
+  header.book .sub{font-size:13px;color:#9a8d63;margin-top:10px;letter-spacing:2px;text-transform:uppercase;}
+  h2{font-size:22px;color:#5a4a22;border-bottom:1px solid #cbbd94;padding-bottom:6px;margin-top:38px;letter-spacing:.5px;}
+  h3{font-size:16px;color:#6b5a2c;margin-bottom:4px;letter-spacing:.3px;}
+  p{margin:10px 0;}
+  .lead{font-size:16px;font-style:italic;color:#5f5335;text-align:center;max-width:600px;margin:18px auto 6px;}
+  strong{color:#4a3f22;}
+  .chip{display:inline-block;font-size:12px;font-weight:bold;color:#fff;border-radius:5px;padding:1px 8px;letter-spacing:.5px;vertical-align:middle;}
+  .n{background:var(--north);} .e{background:var(--east);} .s{background:var(--south);}
+  .w{background:var(--west);} .sea{background:#9a5a86;} .cel{background:var(--cel);}
+  table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;background:#fdfaf0;}
+  th,td{border:1px solid #d3c69c;padding:7px 10px;text-align:left;vertical-align:top;}
+  th{background:#e7dcbb;color:#5a4a22;font-size:13px;letter-spacing:.5px;}
+  td.c{text-align:center;white-space:nowrap;}
+  .callout{background:#efe7cf;border-left:4px solid var(--gold);border-radius:0 8px 8px 0;padding:12px 18px;margin:18px 0;font-size:14.5px;}
+  .callout.rule{border-left-color:#7a8a5f;background:#e9eddc;}
+  .callout.cel{border-left-color:var(--cel);background:#efe9f4;}
+  .callout b{color:#4a3f22;}
+  .turn{counter-reset:step;margin:16px 0;padding:0;list-style:none;}
+  .turn li{position:relative;padding:8px 0 8px 44px;border-bottom:1px dashed #d8cba0;}
+  .turn li:last-child{border-bottom:none;}
+  .turn li::before{counter-increment:step;content:counter(step);position:absolute;left:0;top:8px;width:30px;height:30px;border-radius:50%;
+    background:var(--gold);color:#241d0c;font-weight:bold;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  footer{text-align:center;color:#9a8d63;font-size:12px;margin-top:40px;font-style:italic;}
+  ul.plain{margin:8px 0;padding-left:22px;} ul.plain li{margin:5px 0;}
+</style>
+</head>
+<body>
+<div class="sheet">
+
+<header class="book">
+  <h1>HARMONY</h1>
+  <div class="tag">A Game of Balance</div>
+  <div class="sub">Rules</div>
+</header>
+
+<p class="lead">A meditative two-player game of nature, balance, and change. Gather the land into
+harmony — a full direction or a full terrain — seal each with the turning of the four seasons,
+and find the way before your opponent does.</p>
+
+<h2>The Goal</h2>
+<p>Be the first to complete and <strong>lock four Harmony Sets</strong>. A set is locked when it has
+been capped with the four seasons; a locked set is yours forever. The moment you hold four locked
+sets, you have found Harmony and the game is won.</p>
+
+<h2>The Cards — 109 in all</h2>
+<table>
+  <tr><th>Family</th><th>What it is</th><th class="c">Count</th></tr>
+  <tr>
+    <td><strong>Terrain</strong></td>
+    <td>Every terrain card carries a <em>terrain</em> — Forest, Field, River, or Road — and a
+        <em>direction</em>: <span class="chip n">North</span> <span class="chip e">East</span>
+        <span class="chip s">South</span> <span class="chip w">West</span>. Four terrains × four
+        directions, three copies each.</td>
+    <td class="c">48</td>
+  </tr>
+  <tr>
+    <td><strong>Season</strong></td>
+    <td><span class="chip sea">Spring</span> <span class="chip sea">Summer</span>
+        <span class="chip sea">Autumn</span> <span class="chip sea">Winter</span> — ten of each.
+        Seasons don't build sets; they <em>seal</em> them.</td>
+    <td class="c">40</td>
+  </tr>
+  <tr>
+    <td><strong>Celestial</strong><br>(Solstice &amp; Equinox)</td>
+    <td><span class="chip cel">Spring Equinox</span> <span class="chip cel">Summer Solstice</span>
+        <span class="chip cel">Autumn Equinox</span> <span class="chip cel">Winter Solstice</span> —
+        one of each. Season-wilds that play as one of two seasons (see below).</td>
+    <td class="c">4</td>
+  </tr>
+  <tr>
+    <td><strong>⛰️ Mountain</strong></td>
+    <td>The terrain wild. Stands in for any single terrain card a set is missing.</td>
+    <td class="c">6</td>
+  </tr>
+  <tr>
+    <td><strong>🌫️ Fog / 🍃 Wind</strong></td>
+    <td>Sky cards you hold and <em>play</em> from your hand at the right moment.</td>
+    <td class="c">4 / 4</td>
+  </tr>
+  <tr>
+    <td><strong>⚡ Storm · ☀️ Sun · 🌙 Moon</strong></td>
+    <td>Sky <em>events</em>. You never hold these — they resolve for everyone the instant they are drawn.</td>
+    <td class="c">1 each</td>
+  </tr>
+</table>
+
+<h2>Setup</h2>
+<ul class="plain">
+  <li>Shuffle the deck. Deal <strong>seven cards</strong> to each player.</li>
+  <li>Turn one ordinary card face-up to start the discard pile. (Sky events dealt into a hand or
+      turned up here resolve first — see <em>The Sky</em>.)</li>
+  <li>You take the first turn.</li>
+</ul>
+
+<div class="callout rule"><b>The law of seven.</b> Your hand is <b>always exactly seven cards</b> at
+rest — never more, never less, between turns. Every turn you gain one and shed one, so you end where
+you began: at seven.</div>
+
+<h2>A Turn — One Action</h2>
+<p>A turn is a single action. You do <strong>one</strong> of the following, and then it's your
+opponent's turn:</p>
+<ol class="turn">
+  <li><strong>Draw &amp; build.</strong> Draw one card — the top of the face-down draw pile, or the
+      face-up top of the discard pile if it's an ordinary card — then either lay one set, cap a set,
+      play a Fog or Wind, or simply release one card. You end at seven.</li>
+  <li><strong>Steal a Mountain</strong> <em>instead</em> of drawing (see below). The swap is your
+      whole turn.</li>
+</ol>
+<p>You take <strong>one build action per turn</strong> — lay a set, cap a set, or play a special.
+Capping is its own action (<strong>Cap Set</strong>), separate from laying: a set goes down open, and
+you lock it later, when you choose.</p>
+
+<div class="callout"><b>What ends a turn.</b> Releasing a card ends it; so does <b>laying a set</b>
+(you refill back to seven), <b>playing a Fog or Wind</b> (the played card is itself your discard),
+and <b>stealing a Mountain</b> (the swap is your draw and discard in one).</div>
+
+<h2>Harmony Sets — the Heart of the Game</h2>
+<p>A Harmony Set is <strong>four terrain cards</strong> that agree in one of two ways:</p>
+<table>
+  <tr><th>Kind of set</th><th>What it means</th><th>Example</th></tr>
+  <tr><td><strong>A Direction</strong></td><td>One shared direction, all four different terrains.</td>
+      <td><span class="chip e">East</span> Forest · Field · River · Road<br><em>"East — all terrains"</em></td></tr>
+  <tr><td><strong>A Terrain</strong></td><td>One shared terrain, all four different directions.</td>
+      <td>Forest <span class="chip n">N</span> <span class="chip e">E</span> <span class="chip s">S</span>
+          <span class="chip w">W</span><br><em>"Forest — all directions"</em></td></tr>
+</table>
+<p>Each set has a unique identity — you can't lay the same direction twice or the same terrain twice —
+and you build toward <strong>at most four sets</strong> in all.</p>
+<div class="callout rule"><b>All your sets must be the same kind.</b> Every set you build is either a
+<b>direction</b> (a row) or a <b>terrain</b> (a column) — and they must <b>all</b> be the same one.
+Picture the deck as a 4×4 grid, directions down the side, terrains across the top: a direction-set is
+a full row, a terrain-set is a full column, and a row and a column <em>always cross at one shared
+card</em> (a "Road, all directions" set and an "East, all terrains" set both need <em>East Road</em>).
+So you commit to one kind and build four of it. A finished board is <b>sixteen distinct cards</b> —
+the four directions, or the four terrains, never a mix. (A set keeps its kind for life: completing a
+Mountain never turns a row into a column.)</div>
+<div class="callout"><b>The Mountain fills a gap.</b> A ⛰️ Mountain substitutes for any one terrain card
+a set is missing, so you can lay a set before you've drawn every piece — even more than one Mountain
+in a set, so long as at least one real terrain card is present to give the set its identity.</div>
+
+<h2>Locking a Set — the Four Seasons</h2>
+<p>An unlocked set counts for nothing yet, and any Mountain inside it is exposed. To make a set
+permanent, <strong>cap it with the four seasons</strong> — one <span class="chip sea">Spring</span>,
+one <span class="chip sea">Summer</span>, one <span class="chip sea">Autumn</span>, one
+<span class="chip sea">Winter</span> (a celestial card may stand in for one of them). A capped set is
+<strong>locked</strong>: safe from theft forever, and one of the four you need to win.</p>
+<div class="callout"><b>Capping is always your choice — never automatic.</b> Laying a set only ever
+puts it down <em>open</em>. Locking is a separate, deliberate step you take when you decide to, with
+the <strong>Cap Set</strong> action.</div>
+<ul class="plain">
+  <li><strong>Lay a terrain set — open.</strong> It sits unlocked; its Mountain (if any) is still
+      stealable until you cap.</li>
+  <li><strong>Cap Set.</strong> When you have an open set and the four seasons — either selected in
+      your hand, or waiting as a laid-down season set — choose <strong>Cap Set</strong> to lay the
+      seasons onto a set and lock it. If more than one set is open, you pick which to seal.</li>
+  <li><strong>Hold seasons in play.</strong> You can lay four seasons down on their own as a waiting
+      season set (a <strong>reserve</strong>), then cap with it later — handy when you want to hold a
+      Mountain set open a while before sealing it. You may bank <strong>several</strong> — a season set
+      for each set you still have to lock, up to <strong>four total</strong> (your already-locked sets
+      have used theirs). Season sets aren't unique the way terrain sets are.</li>
+</ul>
+<div class="callout cel"><b>Why hold off?</b> Locking a set with a Mountain seals that Mountain away
+<em>for good</em> — safe from theft, but you can never reuse it. Sometimes you'd rather leave the set
+open and cap it only when you're ready. The choice is always yours.</div>
+
+<h2>Solstice &amp; Equinox — the Celestial Wilds</h2>
+<p>Four special season cards mark the turning points of the year. Each is a <strong>season-wild, but
+either/or</strong>: unlike a Mountain, which can be any terrain, a celestial card may be played as
+<em>one of two</em> adjacent seasons — never both at once. There is one of each in the deck.</p>
+<table>
+  <tr><th>Card</th><th>Plays as…</th><th>The turning it marks</th></tr>
+  <tr><td><span class="chip cel">Spring Equinox</span></td><td><strong>Winter</strong> or <strong>Spring</strong></td><td>winter giving way to spring</td></tr>
+  <tr><td><span class="chip cel">Summer Solstice</span></td><td><strong>Spring</strong> or <strong>Summer</strong></td><td>spring giving way to summer</td></tr>
+  <tr><td><span class="chip cel">Autumn Equinox</span></td><td><strong>Summer</strong> or <strong>Autumn</strong></td><td>summer giving way to autumn</td></tr>
+  <tr><td><span class="chip cel">Winter Solstice</span></td><td><strong>Autumn</strong> or <strong>Winter</strong></td><td>autumn giving way to winter</td></tr>
+</table>
+<div class="callout cel"><b>Using one in a cap.</b> When you seal a set, a celestial card counts as
+whichever of its two seasons you still need — so a <span class="chip cel">Summer Solstice</span> can
+be the Spring or the Summer of your four-season cap, but it fills only one of the four slots. It's a
+flexible bridge when you're one season short, not a second wildcard for every slot.</div>
+
+<h2>The Mountain — Steal &amp; Reclaim</h2>
+<p>A Mountain is powerful but exposed. While it sits in an <strong>unlocked, unfogged</strong> set,
+whoever holds the exact real terrain card it stands in for can play that card into the slot and
+<strong>take the Mountain</strong> into their own hand.</p>
+<ul class="plain">
+  <li><strong>Steal.</strong> Complete the <em>opponent's</em> set with your real card and carry off
+      their Mountain.</li>
+  <li><strong>Reclaim.</strong> Complete <em>your own</em> set with the real card and take your
+      Mountain back to reuse elsewhere.</li>
+</ul>
+<div class="callout"><b>A swap is a whole turn.</b> Stealing or reclaiming is taken <em>instead of
+drawing</em>: the Mountain you take is your draw, the terrain card you leave in its slot is your
+discard, and your turn ends there. You don't also draw from the pile, and you don't also lay a set.
+Two defenses keep a Mountain safe: locking the set with the seasons (permanent), or fogging it
+(temporary).</div>
+
+<h2>Cards You Play — Fog &amp; Wind</h2>
+<h3>🌫️ Fog</h3>
+<p>Play Fog onto any unlocked, unfogged Mountain — your opponent's or your own — to
+<strong>freeze</strong> it. A frozen Mountain's set cannot be stolen from, and cannot be capped or
+locked, until the fog is cleared. <strong>Laying the Fog is your discard</strong> — the Fog rests on
+the Mountain (not on the discard pile, not buried in the deck) and your turn ends. Fogging your own
+Mountain is a legal defensive play: it shields the Mountain from theft, at the cost of not being able
+to cap that set until you clear the fog yourself.</p>
+<h3>🍃 Wind</h3>
+<p>Play Wind to blow the fog off one of <strong>your own</strong> frozen Mountains, freeing that set
+to be capped or completed again. The cleared Fog then goes to the discard pile, spent. Like Fog,
+<strong>playing the Wind is your discard</strong> — the turn ends and you are back to seven.</p>
+
+<h2>The Sky — Storm, Sun &amp; Moon</h2>
+<p>These three are never held or played, and when one is drawn it resolves <strong>for everyone</strong>
+— it is the same sky over both players. The instant it is drawn (even into an opening hand) it takes
+effect and cannot be kept.</p>
+<h3>⚡ Storm</h3>
+<p>The sky breaks. <strong>Every player throws their whole hand into the discard and draws seven
+fresh.</strong> Laid sets are untouched. Drawing the Storm is your turn.</p>
+<h3>☀️ Sun</h3>
+<p>The Sun shines on all. <strong>Each player replaces one card</strong> — draw one from the deck,
+release one of your choice — so every hand stays at seven. Drawing the Sun is your turn.</p>
+<h3>🌙 Moon</h3>
+<p>A quiet renewal. Each player may <strong>release up to three cards and draw that many anew</strong>.
+Drawing the Moon is your turn.</p>
+<div class="callout"><b>When the sky is crowded.</b> If more than one event lands in the same moment,
+they resolve in order of brightness: <b>Storm</b> first — its clouds blot out any Sun or Moon caught
+with it — then <b>Sun</b>, then <b>Moon</b>. Spent sky cards drift to the bottom of the deck and may
+come round again on a later pass.</div>
+
+<h2>Running Out of Cards</h2>
+<p>When the draw pile is spent, the discards (all but the top card) are shuffled into a fresh draw
+pile, and play continues.</p>
+
+<h2>Winning</h2>
+<p>The first player to hold <strong>four locked sets</strong> — all of the same kind, sixteen distinct
+cards in all — has found Harmony and wins.</p>
+
+<h2>Quick Reference</h2>
+<table>
+  <tr><th>Thing</th><th>In short</th></tr>
+  <tr><td><strong>Hand size</strong></td><td>Always seven at rest. Gain one, shed one, every turn.</td></tr>
+  <tr><td><strong>A turn</strong></td><td>One action: draw &amp; build, or steal a Mountain.</td></tr>
+  <tr><td><strong>A set</strong></td><td>Four terrains: one direction + all terrains, or one terrain + all directions. All your sets must be the same kind.</td></tr>
+  <tr><td><strong>Mountain ⛰️</strong></td><td>Terrain wild; fills a missing terrain (more than one allowed, with ≥1 real card).</td></tr>
+  <tr><td><strong>Seasons</strong></td><td>All four (a celestial may be one) lock a set via <strong>Cap Set</strong> — your deliberate choice, never automatic. Or lay them as a waiting reserve.</td></tr>
+  <tr><td><strong>Celestial</strong></td><td>Season-wild for one of two adjacent seasons; fills one cap slot.</td></tr>
+  <tr><td><strong>Steal / reclaim</strong></td><td>Instead of drawing: swap your terrain for a Mountain. That's your whole turn.</td></tr>
+  <tr><td><strong>Fog 🌫️</strong></td><td>Freeze a Mountain (rests on it). Your discard; turn ends.</td></tr>
+  <tr><td><strong>Wind 🍃</strong></td><td>Clear fog off your own Mountain. Your discard; turn ends.</td></tr>
+  <tr><td><strong>Storm / Sun / Moon</strong></td><td>Sky events for everyone, fired on draw: redraw seven / replace one / cycle up to three.</td></tr>
+  <tr><td><strong>Win</strong></td><td>Four locked sets.</td></tr>
+</table>
+
+<footer>Harmony — A Game of Balance · Rules for build v15</footer>
+
+</div>
+</body>
+</html>

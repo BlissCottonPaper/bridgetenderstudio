@@ -1,0 +1,88 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Section } from '@/components/Section';
+import { LanternRule } from '@/components/LanternRule';
+import { CTAButton } from '@/components/CTAButton';
+import { GAMES } from '@/lib/games';
+
+// Every game in the roster gets a statically generated home page.
+export function generateStaticParams() {
+  return Object.keys(GAMES).map((slug) => ({ slug }));
+}
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const game = GAMES[params.slug];
+  if (!game) return {};
+  return {
+    title: `${game.name} — ${game.tagline}`,
+    description: game.hook,
+  };
+}
+
+export default function GameHomePage({ params }: { params: { slug: string } }) {
+  const game = GAMES[params.slug];
+  if (!game) notFound();
+
+  return (
+    <>
+      {/* Slim breadcrumb bar — kept off the artwork so the banner stays immersive. */}
+      <div className="border-b border-stone/60 bg-void/70">
+        <div className="mx-auto max-w-5xl px-5 py-3 sm:px-8">
+          <Link
+            href="/play"
+            className="font-display text-[0.72rem] uppercase tracking-[0.2em] text-parchment/70 transition-colors hover:text-ember"
+          >
+            ← All games
+          </Link>
+        </div>
+      </div>
+
+      {/* The game's face — the whole key-art, shown contained so nothing crops. */}
+      <section className="mx-auto max-w-4xl px-5 pt-8 sm:px-8">
+        <div className="overflow-hidden rounded-md border border-stone bg-[#0c110d] shadow-lantern">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={game.image}
+            alt={`${game.name} — ${game.tagline}`}
+            className="block w-full"
+          />
+        </div>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+          <p className="font-display text-xs uppercase tracking-[0.32em] text-amber">
+            {game.tagline}
+          </p>
+          <span className="rounded-sm border border-parchment/40 bg-amber/5 px-3 py-1 font-display text-[0.62rem] uppercase tracking-[0.16em] text-parchment">
+            {game.status}
+          </span>
+        </div>
+        {/* The key-art carries the title visually; keep an h1 for structure/SEO. */}
+        <h1 className="sr-only">{game.name}</h1>
+      </section>
+
+      {/* The reading, then the threshold. */}
+      <Section className="max-w-3xl text-center">
+        <LanternRule short className="mx-auto" />
+        <p className="mt-8 font-body text-xl leading-relaxed text-parchment/90 sm:text-2xl">
+          {game.description}
+        </p>
+
+        <div className="mt-11 flex flex-col items-center justify-center gap-4 sm:flex-row">
+          <CTAButton
+            href={game.playHref}
+            variant="primary"
+            external
+            className="px-10 py-4 text-base"
+          >
+            Play {game.name}
+          </CTAButton>
+          {game.rulesHref && (
+            <CTAButton href={game.rulesHref} variant="secondary" external className="px-8">
+              Read the Rules
+            </CTAButton>
+          )}
+        </div>
+      </Section>
+    </>
+  );
+}

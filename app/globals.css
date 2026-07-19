@@ -1,0 +1,64 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-void text-parchment font-body antialiased;
+    /* A faint warmth over the void, as if a lantern hangs just off-frame. */
+    background-image:
+      radial-gradient(1200px 600px at 50% -10%, rgba(232, 160, 48, 0.06), transparent 70%),
+      radial-gradient(900px 500px at 85% 120%, rgba(232, 160, 48, 0.04), transparent 70%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-display text-ember;
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: rgba(232, 160, 48, 0.28);
+    color: #fff;
+  }
+
+  /* Visible, on-brand focus ring for keyboard navigation. */
+  :focus-visible {
+    outline: 2px solid theme('colors.amber');
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+}
+
+@layer components {
+  /* The lantern rule — the thin illuminated divider that carries through every page. */
+  .lantern-rule {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(232, 160, 48, 0.15) 15%,
+      rgba(245, 200, 112, 0.55) 50%,
+      rgba(232, 160, 48, 0.15) 85%,
+      transparent
+    );
+    box-shadow: 0 0 10px rgba(232, 160, 48, 0.25);
+  }
+  /* A short, left-anchored variant for section headings. */
+  .lantern-rule-short {
+    width: 4.5rem;
+    height: 1px;
+    border: 0;
+    background: linear-gradient(to right, rgba(245, 200, 112, 0.8), rgba(232, 160, 48, 0.05));
+    box-shadow: 0 0 8px rgba(232, 160, 48, 0.3);
+  }
+}
