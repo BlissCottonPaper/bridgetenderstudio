@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 
 // Self-hosted display, body, and myth-voice faces.
 import '@fontsource/cinzel/400.css';
@@ -28,9 +28,23 @@ export const metadata: Metadata = {
   openGraph: {
     title: STUDIO_NAME,
     description:
-      'An independent creative studio helping meaningful ideas become reality.',
+      'An independent creative studio helping ideas find their way into the world.',
     type: 'website',
   },
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
+  manifest: '/site.webmanifest',
+};
+
+export const viewport: Viewport = {
+  themeColor: '#0a0806',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="BridgeTender lantern">
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#171009"/>
+      <stop offset="1" stop-color="#0a0806"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="58%">
+      <stop offset="0" stop-color="#fff3cf"/>
+      <stop offset="34%" stop-color="#f5c870"/>
+      <stop offset="78%" stop-color="#e8a030"/>
+      <stop offset="100%" stop-color="#a9701d"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Self-contained tile: reads on light and dark browser chrome alike. -->
+  <rect x="2" y="2" width="60" height="60" rx="15" fill="url(#tile)"/>
+  <rect x="2.75" y="2.75" width="58.5" height="58.5" rx="14.25" fill="none" stroke="#e8a030" stroke-opacity="0.28" stroke-width="1.5"/>
+
+  <!-- Warm light spilling from the lantern. -->
+  <circle cx="32" cy="35" r="19" fill="#e8a030" opacity="0.16"/>
+
+  <!-- Handle -->
+  <path d="M26 13 a6 6 0 0 1 12 0" fill="none" stroke="#e8a030" stroke-width="2.8" stroke-linecap="round"/>
+
+  <!-- Cap -->
+  <path d="M21 22 L24.5 16.5 L39.5 16.5 L43 22 Z" fill="#c9861f"/>
+  <rect x="18.5" y="21" width="27" height="4" rx="2" fill="#f5c870"/>
+
+  <!-- Cage body: the glowing light within an amber frame. -->
+  <rect x="21.5" y="26" width="21" height="23" rx="4.5" fill="url(#glow)"/>
+  <!-- Cage posts -->
+  <rect x="21" y="26" width="3.4" height="23" rx="1.7" fill="#2c2012"/>
+  <rect x="39.6" y="26" width="3.4" height="23" rx="1.7" fill="#2c2012"/>
+  <rect x="30.3" y="26.5" width="3.4" height="22" rx="1.5" fill="#3a2c16" opacity="0.55"/>
+
+  <!-- Base -->
+  <path d="M23 49 L21 54.5 L43 54.5 L41 49 Z" fill="#c9861f"/>
+  <rect x="18.5" y="48" width="27" height="4" rx="2" fill="#f5c870"/>
+</svg>
