@@ -38,35 +38,26 @@ export default function GameHomePage({ params }: { params: { slug: string } }) {
         </div>
       </div>
 
-      {/* Cinematic banner — the game's face. */}
-      <section className="relative isolate flex min-h-[36vh] items-end overflow-hidden border-b border-stone">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={game.image}
-          alt={`${game.name} — ${game.tagline}`}
-          className="absolute inset-0 -z-20 h-full w-full object-cover object-center"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 -z-10"
-          style={{
-            background:
-              'linear-gradient(to top, #0a0806 6%, rgba(10,8,6,0.65) 45%, rgba(10,8,6,0.35) 100%)',
-          }}
-        />
-        <div className="mx-auto w-full max-w-5xl px-5 py-9 sm:px-8">
-          <div className="flex flex-wrap items-center gap-4">
-            <p className="font-display text-xs uppercase tracking-[0.32em] text-amber">
-              {game.tagline}
-            </p>
-            <span className="rounded-sm border border-parchment/40 bg-amber/5 px-3 py-1 font-display text-[0.62rem] uppercase tracking-[0.16em] text-parchment">
-              {game.status}
-            </span>
-          </div>
-          <h1 className="mt-2 font-display text-4xl font-semibold tracking-wide text-ember sm:text-5xl">
-            {game.name}
-          </h1>
+      {/* The game's face — the whole key-art, shown contained so nothing crops. */}
+      <section className="mx-auto max-w-4xl px-5 pt-8 sm:px-8">
+        <div className="overflow-hidden rounded-md border border-stone bg-[#0c110d] shadow-lantern">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={game.image}
+            alt={`${game.name} — ${game.tagline}`}
+            className="block w-full"
+          />
         </div>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
+          <p className="font-display text-xs uppercase tracking-[0.32em] text-amber">
+            {game.tagline}
+          </p>
+          <span className="rounded-sm border border-parchment/40 bg-amber/5 px-3 py-1 font-display text-[0.62rem] uppercase tracking-[0.16em] text-parchment">
+            {game.status}
+          </span>
+        </div>
+        {/* The key-art carries the title visually; keep an h1 for structure/SEO. */}
+        <h1 className="sr-only">{game.name}</h1>
       </section>
 
       {/* The reading, then the threshold. */}
