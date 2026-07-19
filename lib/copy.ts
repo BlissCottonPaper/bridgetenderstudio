@@ -65,6 +65,36 @@ export const OUR_WORK = {
     'Games, instruments, and handmade things — each one an idea we helped carry across the bridge. More are always taking shape.',
 };
 
+export const WORK_WITH_US = {
+  eyebrow: 'Work With Us',
+  title: 'Build something with BridgeTender',
+  intro:
+    "We partner with people and teams to shape ideas into things worth playing, learning from, and keeping. Tell us what you're making — we'll help it find its way across.",
+  services: [
+    {
+      name: 'Game Design',
+      body: 'From first spark to playable rules — tabletop and digital games built to be felt, not just finished.',
+    },
+    {
+      name: 'Educational Systems',
+      body: 'Learning that plays. Experiences that teach by doing, designed for real understanding.',
+    },
+    {
+      name: 'AI-Assisted Prototyping',
+      body: 'Turn a described idea into a working prototype quickly — the machinery kept behind the curtain.',
+    },
+    {
+      name: 'Creative Partnerships',
+      body: 'Ongoing collaboration for studios, makers, and organizations with a world to build.',
+    },
+  ],
+  contact: {
+    title: 'Have something in mind?',
+    body: 'Tell us what you want to make. We read every note, and we answer.',
+    cta: 'Start a conversation',
+  },
+};
+
 export const PLAY = {
   eyebrow: 'Play',
   title: 'Cross into a game',
@@ -111,6 +141,10 @@ export const LANTERN = {
     error: {
       title: 'Something went dim.',
       body: "We couldn't add you just now. Please try again in a moment.",
+    },
+    unavailable: {
+      title: 'The lantern is being lit.',
+      body: 'Beta signups are briefly unavailable while we finish setup. Please check back shortly.',
     },
     invalidEmail: 'That email address doesn’t look quite right.',
   },

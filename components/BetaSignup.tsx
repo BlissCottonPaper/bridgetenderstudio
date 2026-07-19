@@ -6,20 +6,64 @@ import { useState, type FormEvent } from 'react';
 import { LANTERN } from '@/lib/copy';
 import { ROUTES, LANTERN_SIGNUP_ENDPOINT } from '@/lib/constants';
 
-// Cloudflare Turnstile site key. Set NEXT_PUBLIC_TURNSTILE_SITE_KEY in the
-// Cloudflare Pages build env for production. The fallback is Cloudflare's
-// documented *test* key (always passes, renders a dummy widget) so the form is
-// functional in dev and preview — it MUST be overridden in production.
-const TURNSTILE_SITE_KEY =
-  process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '1x00000000000000000000AA';
+// Named Turnstile action — verified server-side in production.
+const TURNSTILE_ACTION = 'lantern_beta_signup';
+// Cloudflare's documented always-pass TEST site key — dev/preview only.
+const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
 
-type Status = 'idle' | 'submitting' | 'success' | 'duplicate' | 'error';
+// Environment-aware widget config, resolved at build time.
+//   NEXT_PUBLIC_SITE_ENV        'production' | 'preview' | (unset -> development)
+//   NEXT_PUBLIC_TURNSTILE_SITE_KEY  the real site key (required in production)
+const SITE_ENV = process.env.NEXT_PUBLIC_SITE_ENV || 'development';
+const REAL_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+const IS_PROD = SITE_ENV === 'production';
+// Production NEVER falls back to the test key; dev/preview may.
+const SITE_KEY = IS_PROD ? REAL_SITE_KEY : REAL_SITE_KEY || TURNSTILE_TEST_SITE_KEY;
+// Fail closed on the client: no real key in production -> no form.
+const MISCONFIGURED = IS_PROD && !REAL_SITE_KEY;
+
+type Status = 'idle' | 'submitting' | 'success' | 'duplicate' | 'error' | 'unavailable';
 
 const c = LANTERN.signup;
+
+function Panel({
+  variant,
+  title,
+  body,
+}: {
+  variant: 'warm' | 'muted';
+  title: string;
+  body: string;
+}) {
+  const warm = variant === 'warm';
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      className={`rounded-md border p-8 text-center sm:p-10 ${
+        warm ? 'border-amber/40 bg-shadow/60 shadow-lantern' : 'border-stone bg-shadow/40'
+      }`}
+    >
+      <div
+        aria-hidden="true"
+        className={`mx-auto mb-5 h-3 w-3 rounded-full ${
+          warm ? 'animate-lantern-flicker bg-ember shadow-lantern-strong' : 'bg-amber/40'
+        }`}
+      />
+      <h3 className="font-display text-2xl font-semibold text-ember">{title}</h3>
+      <p className="mx-auto mt-3 max-w-md font-body text-lg text-parchment/85">{body}</p>
+    </div>
+  );
+}
 
 export function BetaSignup() {
   const [status, setStatus] = useState<Status>('idle');
   const [fieldError, setFieldError] = useState<string | null>(null);
+
+  // Fail-closed: production without a real site key shows a graceful notice, not a form.
+  if (MISCONFIGURED) {
+    return <Panel variant="muted" title={c.unavailable.title} body={c.unavailable.body} />;
+  }
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,9 +73,7 @@ export function BetaSignup() {
     const data = new FormData(form);
     const email = String(data.get('email') || '').trim();
     const name = String(data.get('name') || '').trim();
-    // Honeypot — real people never fill this hidden field.
-    const website = String(data.get('website') || '');
-    // Turnstile injects this hidden input into the form once solved.
+    const website = String(data.get('website') || ''); // honeypot
     const token = String(data.get('cf-turnstile-response') || '');
 
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
@@ -46,11 +88,12 @@ export function BetaSignup() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, name, website, token }),
       });
-      const body = await res.json().catch(() => ({}));
+      const b = await res.json().catch(() => ({}));
 
-      if (res.ok && body.duplicate) setStatus('duplicate');
-      else if (res.ok && body.ok) setStatus('success');
-      else if (res.status === 400 && body.error === 'invalid_email') {
+      if (res.ok && b.duplicate) setStatus('duplicate');
+      else if (res.ok && b.ok) setStatus('success');
+      else if (res.status === 503) setStatus('unavailable');
+      else if (res.status === 400 && b.error === 'invalid_email') {
         setStatus('idle');
         setFieldError(c.invalidEmail);
       } else setStatus('error');
@@ -59,24 +102,9 @@ export function BetaSignup() {
     }
   }
 
-  // Confirmation / already-on-list states replace the form.
-  if (status === 'success' || status === 'duplicate') {
-    const s = status === 'success' ? c.success : c.duplicate;
-    return (
-      <div
-        role="status"
-        aria-live="polite"
-        className="rounded-md border border-amber/40 bg-shadow/60 p-8 text-center shadow-lantern sm:p-10"
-      >
-        <div
-          aria-hidden="true"
-          className="mx-auto mb-5 h-3 w-3 animate-lantern-flicker rounded-full bg-ember shadow-lantern-strong"
-        />
-        <h3 className="font-display text-2xl font-semibold text-ember">{s.title}</h3>
-        <p className="mx-auto mt-3 max-w-md font-body text-lg text-parchment/85">{s.body}</p>
-      </div>
-    );
-  }
+  if (status === 'success') return <Panel variant="warm" title={c.success.title} body={c.success.body} />;
+  if (status === 'duplicate') return <Panel variant="warm" title={c.duplicate.title} body={c.duplicate.body} />;
+  if (status === 'unavailable') return <Panel variant="muted" title={c.unavailable.title} body={c.unavailable.body} />;
 
   return (
     <>
@@ -132,9 +160,14 @@ export function BetaSignup() {
           </p>
         )}
 
-        {/* Bot protection */}
+        {/* Bot protection — named action verified server-side. */}
         <div className="mt-6">
-          <div className="cf-turnstile" data-sitekey={TURNSTILE_SITE_KEY} data-theme="dark" />
+          <div
+            className="cf-turnstile"
+            data-sitekey={SITE_KEY}
+            data-action={TURNSTILE_ACTION}
+            data-theme="dark"
+          />
           <p className="mt-2 font-body text-sm text-parchment/45">Protected by Cloudflare Turnstile.</p>
         </div>
 
