@@ -39,8 +39,7 @@ export default function TheStudioPage() {
         </p>
         <LanternRule className="mx-auto mt-8 max-w-md" />
         <p className="mx-auto mt-10 max-w-3xl font-display text-3xl font-semibold leading-[1.24] tracking-wide text-ember sm:text-4xl md:text-5xl">
-          BridgeTender Studio helps ideas <span className="text-parchment">find their way</span>{' '}
-          into the world.
+          BridgeTender Studio helps ideas <span className="text-parchment">find form.</span>
         </p>
         <LanternRule className="mx-auto mt-10 max-w-md" />
         <p className="mx-auto mt-10 max-w-2xl font-body text-lg leading-relaxed text-parchment/80">

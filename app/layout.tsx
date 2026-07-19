@@ -24,11 +24,10 @@ export const metadata: Metadata = {
     template: `%s · ${STUDIO_NAME}`,
   },
   description:
-    'BridgeTender Studio is an independent creative studio helping meaningful ideas become reality.',
+    'BridgeTender Studio is an independent creative workshop that helps ideas find form.',
   openGraph: {
     title: STUDIO_NAME,
-    description:
-      'An independent creative studio helping ideas find their way into the world.',
+    description: 'An independent creative workshop that helps ideas find form.',
     type: 'website',
   },
   icons: {

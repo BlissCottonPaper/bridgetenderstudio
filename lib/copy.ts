@@ -111,7 +111,7 @@ export const STUDIO = {
   identity: 'BridgeTender Studio tends the crossing where ideas find their way into the world.',
   mission: {
     heading: 'The Mission',
-    line: 'BridgeTender Studio helps ideas find their way into the world.',
+    line: 'BridgeTender Studio helps ideas find form.',
     body: 'Every idea begins as something only you can see. Our work is the crossing — the bridge from the half-formed thing in the mind to something real enough to hold, to play, to share.',
   },
   philosophy: {
