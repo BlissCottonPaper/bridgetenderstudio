@@ -26,9 +26,9 @@ export const PROJECTS: Record<string, Project> = {
       'A meditative game of balance, nature, seasons, and change — gather the four terrains across the four directions, complete patterns of harmony, and seal them with the turning of the year.',
     image: '/harmony-logo.png',
     imageFit: 'cover',
-    href: '/play',
+    href: '/play/harmony',
     status: 'Playable Now',
-    cta: 'Play Harmony',
+    cta: 'Meet Harmony',
   },
   soulcraft: {
     slug: 'soulcraft',
@@ -71,8 +71,8 @@ export const PROJECTS: Record<string, Project> = {
   },
 };
 
-// Homepage Featured Projects (order matters).
-export const FEATURED_SLUGS = ['harmony', 'soulcraft', 'bliss'] as const;
+// Homepage Featured Projects (order matters): Bliss left, Harmony right.
+export const FEATURED_SLUGS = ['bliss', 'soulcraft', 'harmony'] as const;
 
 // /our-work full roster (added to over time).
 export const OUR_WORK_SLUGS = ['bliss', 'soulcraft', 'harmony', 'wyldroot'] as const;

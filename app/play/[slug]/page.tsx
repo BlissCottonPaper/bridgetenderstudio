@@ -39,7 +39,7 @@ export default function GameHomePage({ params }: { params: { slug: string } }) {
       </div>
 
       {/* Cinematic banner — the game's face. */}
-      <section className="relative isolate flex min-h-[52vh] items-end overflow-hidden border-b border-stone">
+      <section className="relative isolate flex min-h-[36vh] items-end overflow-hidden border-b border-stone">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={game.image}
@@ -54,7 +54,7 @@ export default function GameHomePage({ params }: { params: { slug: string } }) {
               'linear-gradient(to top, #0a0806 6%, rgba(10,8,6,0.65) 45%, rgba(10,8,6,0.35) 100%)',
           }}
         />
-        <div className="mx-auto w-full max-w-5xl px-5 py-12 sm:px-8">
+        <div className="mx-auto w-full max-w-5xl px-5 py-9 sm:px-8">
           <div className="flex flex-wrap items-center gap-4">
             <p className="font-display text-xs uppercase tracking-[0.32em] text-amber">
               {game.tagline}
@@ -63,7 +63,7 @@ export default function GameHomePage({ params }: { params: { slug: string } }) {
               {game.status}
             </span>
           </div>
-          <h1 className="mt-2 font-display text-5xl font-semibold tracking-wide text-ember sm:text-6xl">
+          <h1 className="mt-2 font-display text-4xl font-semibold tracking-wide text-ember sm:text-5xl">
             {game.name}
           </h1>
         </div>

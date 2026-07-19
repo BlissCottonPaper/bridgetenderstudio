@@ -33,14 +33,14 @@ export function Hero() {
         aria-hidden="true"
       />
 
-      <div className="mx-auto w-full max-w-4xl px-5 py-24 text-center sm:px-8">
-        <p className="animate-fade-up font-display text-xs uppercase tracking-[0.4em] text-amber sm:text-sm">
+      <div className="mx-auto w-full max-w-3xl px-5 py-20 text-center sm:px-8">
+        <p className="animate-fade-up font-display text-[0.7rem] uppercase tracking-[0.4em] text-amber sm:text-xs">
           {eyebrow}
         </p>
 
-        <LanternRule short className="mx-auto mt-6" />
+        <LanternRule short className="mx-auto mt-5" />
 
-        <h1 className="mt-8 animate-fade-up font-body text-4xl font-medium leading-[1.18] tracking-wide text-parchment sm:text-5xl md:text-6xl">
+        <h1 className="mt-6 animate-fade-up font-body text-3xl font-medium leading-[1.2] tracking-wide text-parchment sm:text-4xl md:text-5xl">
           BridgeTender Studio helps ideas <span className="text-ember">find form.</span>
         </h1>
 
