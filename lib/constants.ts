@@ -7,7 +7,7 @@
 // "Game development" is a pathway within Lantern, not the brand.
 export const PLATFORM_NAME = 'Lantern';
 
-// The studio that tends the crossing between an idea and the world beyond.
+// The studio that tends the crossing where ideas find their way into the world.
 export const STUDIO_NAME = 'BridgeTender Studio';
 
 // Public maker's mark — scoped to public pages, never forced into utility/auth screens.

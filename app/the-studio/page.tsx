@@ -9,12 +9,11 @@ import { ROUTES } from '@/lib/constants';
 export const metadata: Metadata = {
   title: 'The Studio',
   description:
-    'BridgeTender tends the crossing between your idea and the world beyond — the mission, philosophy, approach, and future of BridgeTender Studio.',
+    'BridgeTender Studio tends the crossing where ideas find their way into the world — the mission, philosophy, approach, and future of BridgeTender Studio.',
 };
 
 export default function TheStudioPage() {
-  const { eyebrow, identity, whisper, mission, philosophy, approach, process, future, close } =
-    STUDIO;
+  const { eyebrow, identity, mission, philosophy, approach, process, future, close } = STUDIO;
 
   return (
     <>
@@ -30,7 +29,6 @@ export default function TheStudioPage() {
           <p className="font-myth text-3xl italic leading-[1.28] text-parchment sm:text-4xl md:text-[2.75rem]">
             {identity}
           </p>
-          <p className="mt-8 font-myth text-lg italic text-parchment/55 sm:text-xl">{whisper}</p>
         </div>
       </section>
 

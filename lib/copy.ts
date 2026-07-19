@@ -106,10 +106,8 @@ export const PLAY = {
 
 export const STUDIO = {
   eyebrow: 'The Studio',
-  // The deeper identity statement — myth voice, front and center.
-  identity: 'BridgeTender tends the crossing between your idea and the world beyond.',
-  // The manifesto whisper — shown, never explained.
-  whisper: 'They live where we’re not looking.',
+  // The mythic identity line (locked). Plainspoken register lives on the homepage.
+  identity: 'BridgeTender Studio tends the crossing where ideas find their way into the world.',
   mission: {
     heading: 'The Mission',
     line: 'BridgeTender Studio helps ideas find their way into the world.',

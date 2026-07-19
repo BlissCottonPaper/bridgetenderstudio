@@ -15,7 +15,7 @@ export function Footer() {
           <div className="max-w-sm">
             <p className="font-display text-lg tracking-[0.14em] text-ember">BridgeTender</p>
             <p className="mt-3 font-myth text-[1.05rem] italic leading-relaxed text-parchment/75">
-              Tending the crossing between an idea and the world beyond.
+              Tending the crossing where ideas find their way into the world.
             </p>
           </div>
 
